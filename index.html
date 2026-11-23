@@ -2,91 +2,231 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="NEXORA - Universal Business Management System">
-  <title>NEXORA | Business Management</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NEXORA - Universal Business Management System">
+<title>NEXORA | Business Management</title>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      color: #20233a;
-    }
-
-    header {
-      background: #171b32;
-      color: white;
-      padding: 25px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 30px;
-      letter-spacing: 3px;
-    }
-
-    header p {
-      margin-top: 8px;
-      color: #c5c8dc;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-    }
-
-    .welcome {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 3px 15px #00000010;
-    }
-
-    .welcome h2 {
-      margin-bottom: 12px;
-    }
-
-    .welcome p {
-      color: #666;
-      line-height: 1.6;
-    }
-
-    .status {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 18px;
-      background: #e7f8ed;
-      color: #168344;
-      border-radius: 20px;
-      font-size: 14px;
-    }
-  </style>
+<style>
+:root {
+  --bg:#f4f6fb;
+  --white:#ffffff;
+  --dark:#17213a;
+  --blue:#4259d6;
+  --text:#202944;
+  --muted:#8490a5;
+  --border:#e8ebf2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:245px;background:var(--dark);
+  color:white;padding:25px 17px;
+  position:fixed;top:0;bottom:0;left:0;
+}
+.logo{font-size:25px;font-weight:bold;letter-spacing:3px}
+.tagline{font-size:10px;color:#aab5d0;margin-top:7px}
+.menu-title{font-size:11px;color:#8290ae;margin:35px 10px 12px}
+nav a{
+  display:block;color:#cbd3e7;text-decoration:none;
+  padding:13px 12px;border-radius:8px;
+  margin-bottom:5px;font-size:14px;
+}
+nav a.active,nav a:hover{background:#303d61;color:white}
+.main{margin-left:245px;width:calc(100% - 245px)}
+.topbar{
+  background:white;padding:19px 30px;
+  display:flex;justify-content:space-between;
+  align-items:center;border-bottom:1px solid var(--border);
+}
+.topbar h2{font-size:19px}
+select{
+  padding:9px 12px;border:1px solid var(--border);
+  border-radius:7px;background:white;
+}
+.content{padding:30px}
+.welcome{
+  background:linear-gradient(120deg,#253b85,#526be0);
+  padding:30px;border-radius:14px;color:white;
+  margin-bottom:25px;
+}
+.welcome h1{font-size:25px;margin-bottom:10px}
+.welcome p{color:#e0e6ff;line-height:1.6}
+.section-title{margin-bottom:17px;font-size:19px}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:17px;margin-bottom:28px;
+}
+.stat{
+  background:white;padding:22px;border-radius:12px;
+  border:1px solid var(--border);
+}
+.stat span{font-size:13px;color:var(--muted)}
+.stat h3{font-size:27px;margin-top:12px}
+.stat small{color:var(--muted)}
+.panel{
+  background:white;padding:23px;border-radius:12px;
+  border:1px solid var(--border);
+}
+.panel p{color:var(--muted);line-height:1.7;font-size:14px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:35px}
+@media(max-width:850px){
+  .sidebar{width:190px}
+  .main{margin-left:190px;width:calc(100% - 190px)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .layout{display:block}
+  .sidebar{position:relative;width:100%;height:auto;padding:18px}
+  .menu-title{margin:18px 5px 8px}
+  nav{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+  nav a{margin:0;padding:11px 8px;font-size:12px}
+  .main{margin:0;width:100%}
+  .topbar{padding:17px}
+  .content{padding:17px}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .stat{padding:15px}
+  .stat h3{font-size:22px}
+}
+</style>
 </head>
-<body>
 
-  <header>
-    <h1>NEXORA</h1>
-    <p>UNIVERSAL BUSINESS MANAGEMENT</p>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="logo">NEXORA</div>
+  <div class="tagline">UNIVERSAL BUSINESS MANAGEMENT</div>
+
+  <div class="menu-title" data-i18n="menu">MENU PRINCIPAL</div>
+  <nav>
+    <a href="#" class="active" data-i18n="dashboard">⌂ Tableau de bord</a>
+    <a href="#" data-i18n="clients">♙ Clients</a>
+    <a href="#" data-i18n="products">▦ Produits / Services</a>
+    <a href="#" data-i18n="sales">＄ Ventes</a>
+    <a href="#" data-i18n="expenses">↘ Dépenses</a>
+    <a href="#" data-i18n="tasks">✓ Tâches et rappels</a>
+    <a href="#" data-i18n="reports">▤ Rapports</a>
+    <a href="#" data-i18n="settings">⚙ Paramètres</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <h2 data-i18n="dashboard">Tableau de bord</h2>
+    <select id="language" aria-label="Choose language">
+      <option value="fr">🇫🇷 Français</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
   </header>
 
-  <main>
+  <div class="content">
     <section class="welcome">
-      <h2>Bienvenue sur NEXORA 👋</h2>
-      <p>
-        Votre espace intelligent pour gérer,
-        organiser et développer votre entreprise.
+      <h1 data-i18n="welcome">Bienvenue sur NEXORA 👋</h1>
+      <p data-i18n="intro">
+        Votre espace intelligent pour gérer, organiser et développer votre entreprise.
       </p>
-      <div class="status">Plateforme initialisée</div>
     </section>
-  </main>
 
+    <h3 class="section-title" data-i18n="overview">Vue générale</h3>
+
+    <section class="stats">
+      <div class="stat">
+        <span data-i18n="clients">Clients</span>
+        <h3>0</h3>
+        <small data-i18n="registered">Clients enregistrés</small>
+      </div>
+      <div class="stat">
+        <span data-i18n="products">Produits / Services</span>
+        <h3>0</h3>
+        <small data-i18n="available">Articles disponibles</small>
+      </div>
+      <div class="stat">
+        <span data-i18n="sales">Ventes</span>
+        <h3>0</h3>
+        <small data-i18n="transactions">Transactions réalisées</small>
+      </div>
+      <div class="stat">
+        <span data-i18n="revenue">Chiffre d'affaires</span>
+        <h3>0</h3>
+        <small data-i18n="totalrevenue">Revenu total</small>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3 class="section-title" data-i18n="activity">Activité de l'entreprise</h3>
+      <p data-i18n="activitytext">
+        Votre espace est prêt. Commencez par organiser les informations de votre entreprise.
+      </p>
+    </section>
+
+    <div class="footer">
+      © 2026 NEXORA — Universal Business Management System
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const translations = {
+fr: {
+menu:"MENU PRINCIPAL",
+dashboard:"⌂ Tableau de bord",
+clients:"♙ Clients",
+products:"▦ Produits / Services",
+sales:"＄ Ventes",
+expenses:"↘ Dépenses",
+tasks:"✓ Tâches et rappels",
+reports:"▤ Rapports",
+settings:"⚙ Paramètres",
+welcome:"Bienvenue sur NEXORA 👋",
+intro:"Votre espace intelligent pour gérer, organiser et développer votre entreprise.",
+overview:"Vue générale",
+registered:"Clients enregistrés",
+available:"Articles disponibles",
+transactions:"Transactions réalisées",
+revenue:"Chiffre d'affaires",
+totalrevenue:"Revenu total",
+activity:"Activité de l'entreprise",
+activitytext:"Votre espace est prêt. Commencez par organiser les informations de votre entreprise."
+},
+en: {
+menu:"MAIN MENU",
+dashboard:"⌂ Dashboard",
+clients:"♙ Customers",
+products:"▦ Products / Services",
+sales:"＄ Sales",
+expenses:"↘ Expenses",
+tasks:"✓ Tasks & reminders",
+reports:"▤ Reports",
+settings:"⚙ Settings",
+welcome:"Welcome to NEXORA 👋",
+intro:"Your intelligent workspace to manage, organize and grow your business.",
+overview:"Overview",
+registered:"Registered customers",
+available:"Available items",
+transactions:"Completed transactions",
+revenue:"Revenue",
+totalrevenue:"Total income",
+activity:"Business activity",
+activitytext:"Your workspace is ready. Start by organizing your business information."
+}
+};
+
+document.getElementById("language").addEventListener("change", function(){
+  const lang = this.value;
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(element=>{
+    const key = element.dataset.i18n;
+    element.textContent = translations[lang][key];
+  });
+});
+</script>
 </body>
 </html>
+
