@@ -4,13 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="NEXORA - Universal Business Management System">
+<meta name="description" content="NEXORA - Universal Business Management">
 <title>NEXORA | Business Management</title>
 
 <style>
 :root {
   --bg:#f4f6fb;
-  --white:#ffffff;
+  --white:#fff;
   --dark:#17213a;
   --blue:#4259d6;
   --text:#202944;
@@ -18,16 +18,45 @@
   --border:#e8ebf2;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+[hidden]{display:none!important}
+
+.auth-wrap{
+  min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;
 }
+.auth-card{
+  background:white;width:100%;max-width:430px;
+  padding:30px;border-radius:16px;
+  box-shadow:0 8px 35px #17213a18;
+}
+.auth-card h1{text-align:center;color:var(--dark);margin-bottom:8px}
+.auth-card>p{text-align:center;color:var(--muted);margin-bottom:24px}
+label{display:block;font-size:13px;font-weight:bold;margin:13px 0 7px}
+input{
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:8px;font-size:14px;background:white;
+}
+button{
+  padding:12px 16px;border:0;border-radius:8px;
+  background:var(--blue);color:white;font-weight:bold;
+  cursor:pointer;margin-top:14px;
+}
+button:disabled{opacity:.6;cursor:not-allowed}
+.auth-card form>button{width:100%}
+.switch{
+  text-align:center;margin-top:20px;color:var(--muted);
+  font-size:14px;
+}
+.switch button{background:none;color:var(--blue);padding:4px}
+.message{margin-top:15px;font-size:13px;line-height:1.5}
+.error{color:#c62828}
+.success{color:#18864b}
+
 .layout{display:flex;min-height:100vh}
 .sidebar{
-  width:245px;background:var(--dark);
-  color:white;padding:25px 17px;
-  position:fixed;top:0;bottom:0;left:0;
+  width:245px;background:var(--dark);color:white;
+  padding:25px 17px;position:fixed;top:0;bottom:0;left:0;
 }
 .logo{font-size:25px;font-weight:bold;letter-spacing:3px}
 .tagline{font-size:10px;color:#aab5d0;margin-top:7px}
@@ -40,20 +69,17 @@ nav a{
 nav a.active,nav a:hover{background:#303d61;color:white}
 .main{margin-left:245px;width:calc(100% - 245px)}
 .topbar{
-  background:white;padding:19px 30px;
-  display:flex;justify-content:space-between;
-  align-items:center;border-bottom:1px solid var(--border);
+  background:white;padding:19px 30px;display:flex;
+  justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border);gap:12px;
 }
 .topbar h2{font-size:19px}
-select{
-  padding:9px 12px;border:1px solid var(--border);
-  border-radius:7px;background:white;
-}
+.top-actions{display:flex;align-items:center;gap:10px}
+select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;background:white}
 .content{padding:30px}
 .welcome{
   background:linear-gradient(120deg,#253b85,#526be0);
-  padding:30px;border-radius:14px;color:white;
-  margin-bottom:25px;
+  padding:30px;border-radius:14px;color:white;margin-bottom:25px;
 }
 .welcome h1{font-size:25px;margin-bottom:10px}
 .welcome p{color:#e0e6ff;line-height:1.6}
@@ -62,19 +88,26 @@ select{
   display:grid;grid-template-columns:repeat(4,1fr);
   gap:17px;margin-bottom:28px;
 }
-.stat{
-  background:white;padding:22px;border-radius:12px;
-  border:1px solid var(--border);
-}
+.stat{background:white;padding:22px;border-radius:12px;border:1px solid var(--border)}
 .stat span{font-size:13px;color:var(--muted)}
 .stat h3{font-size:27px;margin-top:12px}
 .stat small{color:var(--muted)}
 .panel{
   background:white;padding:23px;border-radius:12px;
-  border:1px solid var(--border);
+  border:1px solid var(--border);margin-bottom:22px;
 }
 .panel p{color:var(--muted);line-height:1.7;font-size:14px}
+#clientForm{max-width:550px;margin:20px 0}
+#clientForm button{width:100%}
+#clientList{margin-top:15px}
+.client-item{
+  padding:13px;border:1px solid var(--border);
+  border-radius:8px;margin-top:9px;
+}
+.client-item strong{display:block;margin-bottom:5px}
+.client-item small{color:var(--muted);line-height:1.6}
 .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:35px}
+.logout{background:#e9edf9;color:#34458c;margin:0}
 @media(max-width:850px){
   .sidebar{width:190px}
   .main{margin-left:190px;width:calc(100% - 190px)}
@@ -87,7 +120,7 @@ select{
   nav{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
   nav a{margin:0;padding:11px 8px;font-size:12px}
   .main{margin:0;width:100%}
-  .topbar{padding:17px}
+  .topbar{padding:15px;flex-wrap:wrap}
   .content{padding:17px}
   .stats{grid-template-columns:1fr 1fr;gap:10px}
   .stat{padding:15px}
@@ -97,7 +130,50 @@ select{
 </head>
 
 <body>
-<div class="layout">
+
+<!-- AUTHENTIFICATION -->
+<section id="authPage" class="auth-wrap">
+  <div class="auth-card">
+    <h1>NEXORA</h1>
+    <p id="authSubtitle">Créez votre espace professionnel</p>
+
+    <form id="registerForm">
+      <label>Nom complet</label>
+      <input id="registerName" type="text" required placeholder="Votre nom complet">
+
+      <label>Nom de l'entreprise</label>
+      <input id="businessName" type="text" required placeholder="Nom de votre entreprise">
+
+      <label>Adresse e-mail</label>
+      <input id="registerEmail" type="email" required placeholder="Votre adresse e-mail">
+
+      <label>Mot de passe (8 caractères minimum)</label>
+      <input id="registerPassword" type="password" minlength="8" required placeholder="Créer un mot de passe">
+
+      <button type="submit" id="registerButton">Créer mon compte</button>
+    </form>
+
+    <form id="loginForm" hidden>
+      <label>Adresse e-mail</label>
+      <input id="loginEmail" type="email" required placeholder="Votre adresse e-mail">
+
+      <label>Mot de passe</label>
+      <input id="loginPassword" type="password" required placeholder="Votre mot de passe">
+
+      <button type="submit" id="loginButton">Se connecter</button>
+    </form>
+
+    <div class="switch">
+      <span id="switchText">Déjà inscrit ?</span>
+      <button type="button" id="switchAuth">Se connecter</button>
+    </div>
+
+    <div id="authMessage" class="message" role="status"></div>
+  </div>
+</section>
+
+<!-- APPLICATION -->
+<div id="app" class="layout" hidden>
 
 <aside class="sidebar">
   <div class="logo">NEXORA</div>
@@ -106,7 +182,7 @@ select{
   <div class="menu-title" data-i18n="menu">MENU PRINCIPAL</div>
   <nav>
     <a href="#" class="active" data-i18n="dashboard">⌂ Tableau de bord</a>
-    <a href="#" data-i18n="clients">♙ Clients</a>
+    <a href="#clients-page" data-i18n="clients">♙ Clients</a>
     <a href="#" data-i18n="products">▦ Produits / Services</a>
     <a href="#" data-i18n="sales">＄ Ventes</a>
     <a href="#" data-i18n="expenses">↘ Dépenses</a>
@@ -119,81 +195,73 @@ select{
 <main class="main">
   <header class="topbar">
     <h2 data-i18n="dashboard">Tableau de bord</h2>
-    <select id="language" aria-label="Choose language">
-      <option value="fr">🇫🇷 Français</option>
-      <option value="en">🇬🇧 English</option>
-    </select>
+    <div class="top-actions">
+      <select id="language" aria-label="Language">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+      <button type="button" class="logout" id="logoutButton">Déconnexion</button>
+    </div>
   </header>
 
   <div class="content">
     <section class="welcome">
       <h1 data-i18n="welcome">Bienvenue sur NEXORA 👋</h1>
-      <p data-i18n="intro">
-        Votre espace intelligent pour gérer, organiser et développer votre entreprise.
-      </p>
+      <p data-i18n="intro">Votre espace intelligent pour gérer, organiser et développer votre entreprise.</p>
+      <p id="companyLabel"></p>
     </section>
 
     <h3 class="section-title" data-i18n="overview">Vue générale</h3>
 
     <section class="stats">
       <div class="stat">
-        <span data-i18n="clients">Clients</span>
-        <h3>0</h3>
-        <small data-i18n="registered">Clients enregistrés</small>
+        <span>Clients</span><h3 id="clientCount">0</h3>
+        <small>Clients enregistrés</small>
       </div>
       <div class="stat">
-        <span data-i18n="products">Produits / Services</span>
-        <h3>0</h3>
-        <small data-i18n="available">Articles disponibles</small>
+        <span>Produits / Services</span><h3>0</h3>
+        <small>Articles disponibles</small>
       </div>
       <div class="stat">
-        <span data-i18n="sales">Ventes</span>
-        <h3>0</h3>
-        <small data-i18n="transactions">Transactions réalisées</small>
+        <span>Ventes</span><h3>0</h3>
+        <small>Transactions réalisées</small>
       </div>
       <div class="stat">
-        <span data-i18n="revenue">Chiffre d'affaires</span>
-        <h3>0</h3>
-        <small data-i18n="totalrevenue">Revenu total</small>
+        <span>Chiffre d'affaires</span><h3>0</h3>
+        <small>Revenu total</small>
       </div>
     </section>
 
     <section class="panel">
-      <h3 class="section-title" data-i18n="activity">Activité de l'entreprise</h3>
-      <p data-i18n="activitytext">
-        Votre espace est prêt. Commencez par organiser les informations de votre entreprise.
-      </p>
+      <h3 class="section-title">Activité de l'entreprise</h3>
+      <p>Votre espace est prêt. Commencez par organiser les informations de votre entreprise.</p>
     </section>
 
-<!-- MODULE CLIENTS -->
-<section class="panel" id="clients-page">
-  <h2 class="section-title">Gestion des clients</h2>
+    <!-- GESTION DES CLIENTS -->
+    <section class="panel" id="clients-page">
+      <h2 class="section-title">Gestion des clients</h2>
+      <p>Enregistrez et gérez les informations de vos clients.</p>
 
-  <p>Enregistrez et gérez les informations de vos clients.</p>
+      <form id="clientForm">
+        <label>Nom complet</label>
+        <input type="text" id="clientName" required placeholder="Nom du client">
 
-  <h3>Ajouter un nouveau client</h3>
+        <label>Téléphone</label>
+        <input type="tel" id="clientPhone" placeholder="Numéro de téléphone">
 
-  <form id="clientForm">
-    <label>Nom complet</label>
-    <input type="text" id="clientName" placeholder="Nom du client" required>
+        <label>Adresse e-mail</label>
+        <input type="email" id="clientEmail" placeholder="Adresse e-mail">
 
-    <label>Téléphone</label>
-    <input type="tel" id="clientPhone" placeholder="Numéro de téléphone">
+        <label>Adresse</label>
+        <input type="text" id="clientAddress" placeholder="Adresse du client">
 
-    <label>Adresse e-mail</label>
-    <input type="email" id="clientEmail" placeholder="Adresse e-mail">
+        <button type="submit" id="saveClientButton">Enregistrer le client</button>
+        <div id="clientMessage" class="message" role="status"></div>
+      </form>
 
-    <label>Adresse</label>
-    <input type="text" id="clientAddress" placeholder="Adresse du client">
-
-    <button type="submit">Enregistrer le client</button>
-  </form>
-
-  <h3>Liste des clients</h3>
-  <div id="clientList">
-    Aucun client enregistré pour le moment.
-  </div>
-</section>
+      <h3>Liste des clients</h3>
+      <div id="clientList">Chargement des clients...</div>
+    </section>
 
     <div class="footer">
       © 2026 NEXORA — Universal Business Management System
@@ -202,9 +270,12 @@ select{
 </main>
 </div>
 
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+"use strict";
+
 const SUPABASE_URL = "https://lsvndmreavblrezsuuiw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_VKurwyGLNtrUAQ1i2YH0hw_2GOhItTQ";
 
@@ -212,136 +283,347 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-</script>
 
-<script>
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let currentOrganization = null;
+
 const translations = {
-fr: {
-menu:"MENU PRINCIPAL",
-dashboard:"⌂ Tableau de bord",
-clients:"♙ Clients",
-products:"▦ Produits / Services",
-sales:"＄ Ventes",
-expenses:"↘ Dépenses",
-tasks:"✓ Tâches et rappels",
-reports:"▤ Rapports",
-settings:"⚙ Paramètres",
-welcome:"Bienvenue sur NEXORA 👋",
-intro:"Votre espace intelligent pour gérer, organiser et développer votre entreprise.",
-overview:"Vue générale",
-registered:"Clients enregistrés",
-available:"Articles disponibles",
-transactions:"Transactions réalisées",
-revenue:"Chiffre d'affaires",
-totalrevenue:"Revenu total",
-activity:"Activité de l'entreprise",
-activitytext:"Votre espace est prêt. Commencez par organiser les informations de votre entreprise."
-},
-en: {
-menu:"MAIN MENU",
-dashboard:"⌂ Dashboard",
-clients:"♙ Customers",
-products:"▦ Products / Services",
-sales:"＄ Sales",
-expenses:"↘ Expenses",
-tasks:"✓ Tasks & reminders",
-reports:"▤ Reports",
-settings:"⚙ Settings",
-welcome:"Welcome to NEXORA 👋",
-intro:"Your intelligent workspace to manage, organize and grow your business.",
-overview:"Overview",
-registered:"Registered customers",
-available:"Available items",
-transactions:"Completed transactions",
-revenue:"Revenue",
-totalrevenue:"Total income",
-activity:"Business activity",
-activitytext:"Your workspace is ready. Start by organizing your business information."
-}
+  fr: {
+    menu:"MENU PRINCIPAL",
+    dashboard:"⌂ Tableau de bord",
+    clients:"♙ Clients",
+    products:"▦ Produits / Services",
+    sales:"＄ Ventes",
+    expenses:"↘ Dépenses",
+    tasks:"✓ Tâches et rappels",
+    reports:"▤ Rapports",
+    settings:"⚙ Paramètres",
+    welcome:"Bienvenue sur NEXORA 👋",
+    intro:"Votre espace intelligent pour gérer, organiser et développer votre entreprise.",
+    overview:"Vue générale"
+  },
+  en: {
+    menu:"MAIN MENU",
+    dashboard:"⌂ Dashboard",
+    clients:"♙ Customers",
+    products:"▦ Products / Services",
+    sales:"＄ Sales",
+    expenses:"↘ Expenses",
+    tasks:"✓ Tasks & reminders",
+    reports:"▤ Reports",
+    settings:"⚙ Settings",
+    welcome:"Welcome to NEXORA 👋",
+    intro:"Your intelligent workspace to manage, organize and grow your business.",
+    overview:"Overview"
+  }
 };
 
-document.getElementById("language").addEventListener("change", function(){
-  const lang = this.value;
-  document.documentElement.lang = lang;
-  document.querySelectorAll("[data-i18n]").forEach(element=>{
-    const key = element.dataset.i18n;
-    element.textContent = translations[lang][key];
-  });
-});
-// INSCRIPTION NEXORA
-document.getElementById("registerForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+function showMessage(id, message, type="") {
+  const element = $(id);
+  element.textContent = message;
+  element.className = "message " + type;
+}
 
-  const name = document.getElementById("registerName").value.trim();
-  const email = document.getElementById("registerEmail").value.trim();
-  const password = document.getElementById("registerPassword").value;
-  const message = document.getElementById("authMessage");
+function showAuth(mode="register") {
+  $("authPage").hidden = false;
+  $("app").hidden = true;
 
-  message.textContent = "Création du compte en cours...";
+  const registering = mode === "register";
+  $("registerForm").hidden = !registering;
+  $("loginForm").hidden = registering;
+  $("authSubtitle").textContent = registering
+    ? "Créez votre espace professionnel"
+    : "Connectez-vous à votre espace professionnel";
+  $("switchText").textContent = registering
+    ? "Déjà inscrit ?"
+    : "Vous n'avez pas de compte ?";
+  $("switchAuth").textContent = registering
+    ? "Se connecter"
+    : "Créer un compte";
+  showMessage("authMessage", "");
+}
 
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
-    password: password,
-    options: {
-      data: {
-        full_name: name
-      }
-    }
-  });
+function showApp() {
+  $("authPage").hidden = true;
+  $("app").hidden = false;
+}
 
-  if (error) {
-    message.textContent = "Erreur : " + error.message;
+function switchAuthMode() {
+  showAuth($("registerForm").hidden ? "register" : "login");
+}
+
+// Trouver ou créer l'entreprise du propriétaire connecté
+async function ensureOrganization(user) {
+  const { data: existing, error: findError } = await supabaseClient
+    .from("organizations")
+    .select("id,name")
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
+  if (findError) throw findError;
+
+  if (existing) return existing;
+
+  const metadata = user.user_metadata || {};
+  const companyName =
+    metadata.business_name ||
+    ("Entreprise de " + (metadata.full_name || user.email));
+
+  const { data: created, error: createError } = await supabaseClient
+    .from("organizations")
+    .insert({
+      name: companyName,
+      owner_id: user.id
+    })
+    .select("id,name")
+    .single();
+
+  if (createError) throw createError;
+
+  return created;
+}
+
+async function enterApplication(user) {
+  currentUser = user;
+  showApp();
+
+  try {
+    currentOrganization = await ensureOrganization(user);
+    $("companyLabel").textContent =
+      "Entreprise : " + currentOrganization.name;
+    await loadCustomers();
+  } catch (error) {
+    console.error("Erreur organisation :", error);
+    showMessage(
+      "clientMessage",
+      "Impossible de charger l'entreprise : " + error.message,
+      "error"
+    );
+  }
+}
+
+// INSCRIPTION
+$("registerForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const name = $("registerName").value.trim();
+  const businessName = $("businessName").value.trim();
+  const email = $("registerEmail").value.trim();
+  const password = $("registerPassword").value;
+
+  if (!name || !businessName || !email || password.length < 8) {
+    showMessage("authMessage", "Veuillez remplir correctement tous les champs.", "error");
     return;
   }
 
-  message.textContent = "Compte créé ! Vérifiez votre boîte e-mail pour confirmer votre adresse.";
+  const button = $("registerButton");
+  button.disabled = true;
+  button.textContent = "Création en cours...";
+  showMessage("authMessage", "Création de votre compte...");
+
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          business_name: businessName
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session && data.user) {
+      showMessage("authMessage", "Compte créé avec succès.", "success");
+      await enterApplication(data.user);
+    } else {
+      $("registerForm").reset();
+showAuth("login");
+$("loginEmail").value = email;
+
+showMessage(
+  "authMessage",
+  "Compte créé ! Consultez votre boîte e-mail pour confirmer votre adresse.",
+  "success"
+);
+    }
+  } catch (error) {
+    showMessage("authMessage", "Erreur : " + error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Créer mon compte";
+  }
 });
 
-// AFFICHER LA CONNEXION
-document.getElementById("showLogin").addEventListener("click", function() {
-  document.getElementById("registerForm").style.display = "none";
-  document.getElementById("loginForm").style.display = "block";
+// CONNEXION
+$("loginForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+  const button = $("loginButton");
+
+  button.disabled = true;
+  button.textContent = "Connexion...";
+  showMessage("authMessage", "Vérification de vos identifiants...");
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    await enterApplication(data.user);
+  } catch (error) {
+    showMessage("authMessage", "Connexion impossible : " + error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Se connecter";
+  }
 });
 
+$("switchAuth").addEventListener("click", switchAuthMode);
+
+// DÉCONNEXION
+$("logoutButton").addEventListener("click", async function() {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert("Erreur de déconnexion : " + error.message);
+    return;
+  }
+
+  currentUser = null;
+  currentOrganization = null;
+  showAuth("login");
+});
+
+// ENREGISTRER UN CLIENT
+$("clientForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  if (!currentUser || !currentOrganization) {
+    showMessage("clientMessage", "Votre entreprise n'est pas encore chargée.", "error");
+    return;
+  }
+
+  const button = $("saveClientButton");
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+
+  const customer = {
+    organization_id: currentOrganization.id,
+    full_name: $("clientName").value.trim(),
+    phone: $("clientPhone").value.trim() || null,
+    email: $("clientEmail").value.trim() || null,
+    address: $("clientAddress").value.trim() || null
+  };
+
+  try {
+    const { error } = await supabaseClient
+      .from("customers")
+      .insert(customer);
+
+    if (error) throw error;
+
+    $("clientForm").reset();
+    showMessage("clientMessage", "Client enregistré avec succès !", "success");
+    await loadCustomers();
+  } catch (error) {
+    showMessage("clientMessage", "Erreur d'enregistrement : " + error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Enregistrer le client";
+  }
+});
+
+// CHARGER LES CLIENTS
+async function loadCustomers() {
+  if (!currentOrganization) return;
+
+  $("clientList").textContent = "Chargement des clients...";
+
+  const { data, error } = await supabaseClient
+    .from("customers")
+    .select("id,full_name,phone,email,address,created_at")
+    .eq("organization_id", currentOrganization.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    $("clientList").textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  $("clientCount").textContent = data.length;
+
+  const list = $("clientList");
+  list.replaceChildren();
+
+  if (!data.length) {
+    list.textContent = "Aucun client enregistré pour le moment.";
+    return;
+  }
+
+  data.forEach(customer => {
+    const item = document.createElement("div");
+    item.className = "client-item";
+
+    const name = document.createElement("strong");
+    name.textContent = customer.full_name;
+
+    const details = document.createElement("small");
+    details.textContent = [
+      customer.phone,
+      customer.email,
+      customer.address
+    ].filter(Boolean).join(" • ");
+
+    item.append(name, details);
+    list.appendChild(item);
+  });
+}
+
+// LANGUES
+$("language").addEventListener("change", function() {
+  const lang = this.value;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    const key = element.dataset.i18n;
+    if (translations[lang][key]) {
+      element.textContent = translations[lang][key];
+    }
+  });
+});
+
+// RESTAURER LA SESSION AU CHARGEMENT
+async function initializeApp() {
+  showAuth("register");
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    if (data.session) {
+      await enterApplication(data.session.user);
+    }
+  } catch (error) {
+    console.error("Erreur de session :", error);
+    showMessage("authMessage", "Impossible de vérifier la session : " + error.message, "error");
+  }
+}
+
+initializeApp();
 </script>
+
 </body>
-<!-- NEXORA AUTHENTIFICATION -->
-<section id="auth-page" style="max-width:420px;margin:50px auto;padding:25px;background:white;border-radius:15px;box-shadow:0 4px 20px #0002;">
-
-  <h2 style="text-align:center;">Bienvenue sur NEXORA</h2>
-  <p style="text-align:center;">Créez votre compte professionnel</p>
-
-  <form id="registerForm">
-    <label>Nom complet</label>
-    <input type="text" id="registerName" placeholder="Votre nom complet" required>
-
-    <label>Adresse e-mail</label>
-    <input type="email" id="registerEmail" placeholder="Votre e-mail" required>
-
-    <label>Mot de passe</label>
-    <input type="password" id="registerPassword" placeholder="Minimum 8 caractères" minlength="8" required>
-
-    <button type="submit">Créer mon compte</button>
-  </form>
-
-  <p style="text-align:center;margin-top:20px;">
-    Déjà inscrit ?
-    <button type="button" id="showLogin">Se connecter</button>
-  </p>
-
-  <form id="loginForm" style="display:none;">
-    <h3>Connexion</h3>
-    <label>Adresse e-mail</label>
-    <input type="email" id="loginEmail" required>
-
-    <label>Mot de passe</label>
-    <input type="password" id="loginPassword" required>
-
-    <button type="submit">Se connecter</button>
-  </form>
-
-  <p id="authMessage"></p>
-</section>
-
 </html>
+
 
