@@ -9,105 +9,68 @@
 
 <style>
 :root {
-  --bg:#f4f6fb;
-  --white:#fff;
-  --dark:#17213a;
-  --blue:#4259d6;
-  --text:#202944;
-  --muted:#8490a5;
+  --bg:#f4f6fb; --white:#fff; --dark:#17213a;
+  --blue:#4259d6; --text:#202944; --muted:#8490a5;
   --border:#e8ebf2;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
 [hidden]{display:none!important}
 
-.auth-wrap{
-  min-height:100vh;display:flex;align-items:center;
-  justify-content:center;padding:20px;
-}
-.auth-card{
-  background:white;width:100%;max-width:430px;
-  padding:30px;border-radius:16px;
-  box-shadow:0 8px 35px #17213a18;
-}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:white;width:100%;max-width:430px;padding:30px;border-radius:16px;box-shadow:0 8px 35px #17213a18}
 .auth-card h1{text-align:center;color:var(--dark);margin-bottom:8px}
 .auth-card>p{text-align:center;color:var(--muted);margin-bottom:24px}
 label{display:block;font-size:13px;font-weight:bold;margin:13px 0 7px}
-input{
-  width:100%;padding:12px;border:1px solid var(--border);
-  border-radius:8px;font-size:14px;background:white;
-}
-button{
-  padding:12px 16px;border:0;border-radius:8px;
-  background:var(--blue);color:white;font-weight:bold;
-  cursor:pointer;margin-top:14px;
-}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:white;color:var(--text)}
+textarea{min-height:85px;resize:vertical}
+button{padding:12px 16px;border:0;border-radius:8px;background:var(--blue);color:white;font-weight:bold;cursor:pointer;margin-top:14px}
 button:disabled{opacity:.6;cursor:not-allowed}
 .auth-card form>button{width:100%}
-.switch{
-  text-align:center;margin-top:20px;color:var(--muted);
-  font-size:14px;
-}
+.switch{text-align:center;margin-top:20px;color:var(--muted);font-size:14px}
 .switch button{background:none;color:var(--blue);padding:4px}
 .message{margin-top:15px;font-size:13px;line-height:1.5}
 .error{color:#c62828}
 .success{color:#18864b}
 
 .layout{display:flex;min-height:100vh}
-.sidebar{
-  width:245px;background:var(--dark);color:white;
-  padding:25px 17px;position:fixed;top:0;bottom:0;left:0;
-}
+.sidebar{width:245px;background:var(--dark);color:white;padding:25px 17px;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
 .logo{font-size:25px;font-weight:bold;letter-spacing:3px}
 .tagline{font-size:10px;color:#aab5d0;margin-top:7px}
 .menu-title{font-size:11px;color:#8290ae;margin:35px 10px 12px}
-nav a{
-  display:block;color:#cbd3e7;text-decoration:none;
-  padding:13px 12px;border-radius:8px;
-  margin-bottom:5px;font-size:14px;
-}
+nav a{display:block;color:#cbd3e7;text-decoration:none;padding:13px 12px;border-radius:8px;margin-bottom:5px;font-size:14px}
 nav a.active,nav a:hover{background:#303d61;color:white}
 .main{margin-left:245px;width:calc(100% - 245px)}
-.topbar{
-  background:white;padding:19px 30px;display:flex;
-  justify-content:space-between;align-items:center;
-  border-bottom:1px solid var(--border);gap:12px;
-}
+.topbar{background:white;padding:19px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:12px}
 .topbar h2{font-size:19px}
 .top-actions{display:flex;align-items:center;gap:10px}
-select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;background:white}
+.top-actions select{width:auto}
 .content{padding:30px}
-.welcome{
-  background:linear-gradient(120deg,#253b85,#526be0);
-  padding:30px;border-radius:14px;color:white;margin-bottom:25px;
-}
+.welcome{background:linear-gradient(120deg,#253b85,#526be0);padding:30px;border-radius:14px;color:white;margin-bottom:25px}
 .welcome h1{font-size:25px;margin-bottom:10px}
 .welcome p{color:#e0e6ff;line-height:1.6}
 .section-title{margin-bottom:17px;font-size:19px}
-.stats{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:17px;margin-bottom:28px;
-}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:17px;margin-bottom:28px}
 .stat{background:white;padding:22px;border-radius:12px;border:1px solid var(--border)}
 .stat span{font-size:13px;color:var(--muted)}
 .stat h3{font-size:27px;margin-top:12px}
 .stat small{color:var(--muted)}
-.panel{
-  background:white;padding:23px;border-radius:12px;
-  border:1px solid var(--border);margin-bottom:22px;
-}
+.panel{background:white;padding:23px;border-radius:12px;border:1px solid var(--border);margin-bottom:22px}
 .panel p{color:var(--muted);line-height:1.7;font-size:14px}
-#clientForm{max-width:550px;margin:20px 0}
-#clientForm button{width:100%}
-#clientList{margin-top:15px}
-.client-item{
-  padding:13px;border:1px solid var(--border);
-  border-radius:8px;margin-top:9px;
-}
-.client-item strong{display:block;margin-bottom:5px}
-.client-item small{color:var(--muted);line-height:1.6}
+#clientForm,#productForm{max-width:550px;margin:20px 0}
+#clientForm button,#productForm button{width:100%}
+#clientList,#productList{margin-top:15px}
+.client-item,.product-item{padding:15px;border:1px solid var(--border);border-radius:8px;margin-top:10px}
+.client-item strong,.product-item strong{display:block;margin-bottom:6px}
+.client-item small,.product-item small{color:var(--muted);line-height:1.7}
+.product-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.product-actions button{margin-top:0;padding:9px 13px}
+.edit-button{background:#e9edf9;color:#34458c}
+.delete-button{background:#fdeaea;color:#b42318}
+.cancel-button{background:#737f95}
 .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:35px}
 .logout{background:#e9edf9;color:#34458c;margin:0}
+
 @media(max-width:850px){
   .sidebar{width:190px}
   .main{margin-left:190px;width:calc(100% - 190px)}
@@ -167,7 +130,6 @@ select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;backgro
       <span id="switchText">Déjà inscrit ?</span>
       <button type="button" id="switchAuth">Se connecter</button>
     </div>
-
     <div id="authMessage" class="message" role="status"></div>
   </div>
 </section>
@@ -179,22 +141,22 @@ select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;backgro
   <div class="logo">NEXORA</div>
   <div class="tagline">UNIVERSAL BUSINESS MANAGEMENT</div>
 
-  <div class="menu-title" data-i18n="menu">MENU PRINCIPAL</div>
+  <div class="menu-title">MENU PRINCIPAL</div>
   <nav>
-    <a href="#" class="active" data-i18n="dashboard">⌂ Tableau de bord</a>
-    <a href="#clients-page" data-i18n="clients">♙ Clients</a>
-    <a href="#" data-i18n="products">▦ Produits / Services</a>
-    <a href="#" data-i18n="sales">＄ Ventes</a>
-    <a href="#" data-i18n="expenses">↘ Dépenses</a>
-    <a href="#" data-i18n="tasks">✓ Tâches et rappels</a>
-    <a href="#" data-i18n="reports">▤ Rapports</a>
-    <a href="#" data-i18n="settings">⚙ Paramètres</a>
+    <a href="#dashboard-page" class="active">⌂ Tableau de bord</a>
+    <a href="#clients-page">♙ Clients</a>
+    <a href="#products-page">▦ Produits / Services</a>
+    <a href="#">＄ Ventes</a>
+    <a href="#">↘ Dépenses</a>
+    <a href="#">✓ Tâches et rappels</a>
+    <a href="#">▤ Rapports</a>
+    <a href="#">⚙ Paramètres</a>
   </nav>
 </aside>
 
 <main class="main">
   <header class="topbar">
-    <h2 data-i18n="dashboard">Tableau de bord</h2>
+    <h2>Tableau de bord</h2>
     <div class="top-actions">
       <select id="language" aria-label="Language">
         <option value="fr">🇫🇷 Français</option>
@@ -205,29 +167,34 @@ select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;backgro
   </header>
 
   <div class="content">
-    <section class="welcome">
-      <h1 data-i18n="welcome">Bienvenue sur NEXORA 👋</h1>
-      <p data-i18n="intro">Votre espace intelligent pour gérer, organiser et développer votre entreprise.</p>
+
+    <section class="welcome" id="dashboard-page">
+      <h1>Bienvenue sur NEXORA 👋</h1>
+      <p>Votre espace intelligent pour gérer, organiser et développer votre entreprise.</p>
       <p id="companyLabel"></p>
     </section>
 
-    <h3 class="section-title" data-i18n="overview">Vue générale</h3>
+    <h3 class="section-title">Vue générale</h3>
 
     <section class="stats">
       <div class="stat">
-        <span>Clients</span><h3 id="clientCount">0</h3>
+        <span>Clients</span>
+        <h3 id="clientCount">0</h3>
         <small>Clients enregistrés</small>
       </div>
       <div class="stat">
-        <span>Produits / Services</span><h3>0</h3>
-        <small>Articles disponibles</small>
+        <span>Produits / Services</span>
+        <h3 id="productCount">0</h3>
+        <small>Articles enregistrés</small>
       </div>
       <div class="stat">
-        <span>Ventes</span><h3>0</h3>
+        <span>Ventes</span>
+        <h3>0</h3>
         <small>Transactions réalisées</small>
       </div>
       <div class="stat">
-        <span>Chiffre d'affaires</span><h3>0</h3>
+        <span>Chiffre d'affaires</span>
+        <h3>0</h3>
         <small>Revenu total</small>
       </div>
     </section>
@@ -263,9 +230,46 @@ select{padding:9px 12px;border:1px solid var(--border);border-radius:7px;backgro
       <div id="clientList">Chargement des clients...</div>
     </section>
 
+    <!-- GESTION DES PRODUITS ET SERVICES -->
+    <section class="panel" id="products-page">
+      <h2 class="section-title">Gestion des produits et services</h2>
+      <p>Ajoutez, consultez, modifiez et supprimez les produits et services de votre entreprise.</p>
+
+      <form id="productForm">
+        <input type="hidden" id="productId">
+
+        <label>Nom du produit ou service</label>
+        <input type="text" id="productName" required placeholder="Exemple : Ordinateur">
+
+        <label>Type</label>
+        <select id="productType" required>
+          <option value="product">Produit</option>
+          <option value="service">Service</option>
+        </select>
+
+        <label>Description</label>
+        <textarea id="productDescription" placeholder="Décrivez votre produit ou service"></textarea>
+
+        <label>Prix</label>
+        <input type="number" id="productPrice" min="0" step="0.01" required placeholder="Exemple : 250">
+
+        <label>Quantité en stock (pour les produits)</label>
+        <input type="number" id="productStock" min="0" step="1" value="0">
+
+        <button type="submit" id="saveProductButton">Enregistrer le produit</button>
+        <button type="button" id="cancelEditButton" class="cancel-button" hidden>Annuler la modification</button>
+
+        <div id="productMessage" class="message" role="status"></div>
+      </form>
+
+      <h3>Liste des produits et services</h3>
+      <div id="productList">Chargement des produits...</div>
+    </section>
+
     <div class="footer">
       © 2026 NEXORA — Universal Business Management System
     </div>
+
   </div>
 </main>
 </div>
@@ -288,44 +292,16 @@ const $ = id => document.getElementById(id);
 
 let currentUser = null;
 let currentOrganization = null;
+let productsCache = [];
 
-const translations = {
-  fr: {
-    menu:"MENU PRINCIPAL",
-    dashboard:"⌂ Tableau de bord",
-    clients:"♙ Clients",
-    products:"▦ Produits / Services",
-    sales:"＄ Ventes",
-    expenses:"↘ Dépenses",
-    tasks:"✓ Tâches et rappels",
-    reports:"▤ Rapports",
-    settings:"⚙ Paramètres",
-    welcome:"Bienvenue sur NEXORA 👋",
-    intro:"Votre espace intelligent pour gérer, organiser et développer votre entreprise.",
-    overview:"Vue générale"
-  },
-  en: {
-    menu:"MAIN MENU",
-    dashboard:"⌂ Dashboard",
-    clients:"♙ Customers",
-    products:"▦ Products / Services",
-    sales:"＄ Sales",
-    expenses:"↘ Expenses",
-    tasks:"✓ Tasks & reminders",
-    reports:"▤ Reports",
-    settings:"⚙ Settings",
-    welcome:"Welcome to NEXORA 👋",
-    intro:"Your intelligent workspace to manage, organize and grow your business.",
-    overview:"Overview"
-  }
-};
-
+// MESSAGES
 function showMessage(id, message, type="") {
   const element = $(id);
   element.textContent = message;
   element.className = "message " + type;
 }
 
+// AFFICHAGE AUTHENTIFICATION
 function showAuth(mode="register") {
   $("authPage").hidden = false;
   $("app").hidden = true;
@@ -333,15 +309,19 @@ function showAuth(mode="register") {
   const registering = mode === "register";
   $("registerForm").hidden = !registering;
   $("loginForm").hidden = registering;
+
   $("authSubtitle").textContent = registering
     ? "Créez votre espace professionnel"
     : "Connectez-vous à votre espace professionnel";
+
   $("switchText").textContent = registering
     ? "Déjà inscrit ?"
     : "Vous n'avez pas de compte ?";
+
   $("switchAuth").textContent = registering
     ? "Se connecter"
     : "Créer un compte";
+
   showMessage("authMessage", "");
 }
 
@@ -354,7 +334,7 @@ function switchAuthMode() {
   showAuth($("registerForm").hidden ? "register" : "login");
 }
 
-// Trouver ou créer l'entreprise du propriétaire connecté
+// TROUVER OU CRÉER L'ENTREPRISE
 async function ensureOrganization(user) {
   const { data: existing, error: findError } = await supabaseClient
     .from("organizations")
@@ -363,12 +343,10 @@ async function ensureOrganization(user) {
     .maybeSingle();
 
   if (findError) throw findError;
-
   if (existing) return existing;
 
   const metadata = user.user_metadata || {};
-  const companyName =
-    metadata.business_name ||
+  const companyName = metadata.business_name ||
     ("Entreprise de " + (metadata.full_name || user.email));
 
   const { data: created, error: createError } = await supabaseClient
@@ -381,19 +359,23 @@ async function ensureOrganization(user) {
     .single();
 
   if (createError) throw createError;
-
   return created;
 }
 
+// ENTRER DANS L'APPLICATION
 async function enterApplication(user) {
   currentUser = user;
   showApp();
 
   try {
     currentOrganization = await ensureOrganization(user);
+
     $("companyLabel").textContent =
       "Entreprise : " + currentOrganization.name;
+
     await loadCustomers();
+    await loadProducts();
+
   } catch (error) {
     console.error("Erreur organisation :", error);
     showMessage(
@@ -421,7 +403,6 @@ $("registerForm").addEventListener("submit", async function(event) {
   const button = $("registerButton");
   button.disabled = true;
   button.textContent = "Création en cours...";
-  showMessage("authMessage", "Création de votre compte...");
 
   try {
     const { data, error } = await supabaseClient.auth.signUp({
@@ -438,19 +419,18 @@ $("registerForm").addEventListener("submit", async function(event) {
     if (error) throw error;
 
     if (data.session && data.user) {
-      showMessage("authMessage", "Compte créé avec succès.", "success");
       await enterApplication(data.user);
     } else {
       $("registerForm").reset();
-showAuth("login");
-$("loginEmail").value = email;
-
-showMessage(
-  "authMessage",
-  "Compte créé ! Consultez votre boîte e-mail pour confirmer votre adresse.",
-  "success"
-);
+      showAuth("login");
+      $("loginEmail").value = email;
+      showMessage(
+        "authMessage",
+        "Compte créé ! Consultez votre boîte e-mail pour confirmer votre adresse.",
+        "success"
+      );
     }
+
   } catch (error) {
     showMessage("authMessage", "Erreur : " + error.message, "error");
   } finally {
@@ -469,7 +449,6 @@ $("loginForm").addEventListener("submit", async function(event) {
 
   button.disabled = true;
   button.textContent = "Connexion...";
-  showMessage("authMessage", "Vérification de vos identifiants...");
 
   try {
     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -478,8 +457,8 @@ $("loginForm").addEventListener("submit", async function(event) {
     });
 
     if (error) throw error;
-
     await enterApplication(data.user);
+
   } catch (error) {
     showMessage("authMessage", "Connexion impossible : " + error.message, "error");
   } finally {
@@ -501,6 +480,7 @@ $("logoutButton").addEventListener("click", async function() {
 
   currentUser = null;
   currentOrganization = null;
+  productsCache = [];
   showAuth("login");
 });
 
@@ -535,6 +515,7 @@ $("clientForm").addEventListener("submit", async function(event) {
     $("clientForm").reset();
     showMessage("clientMessage", "Client enregistré avec succès !", "success");
     await loadCustomers();
+
   } catch (error) {
     showMessage("clientMessage", "Erreur d'enregistrement : " + error.message, "error");
   } finally {
@@ -589,20 +570,237 @@ async function loadCustomers() {
   });
 }
 
-// LANGUES
-$("language").addEventListener("change", function() {
-  const lang = this.value;
-  document.documentElement.lang = lang;
+// RÉINITIALISER LE FORMULAIRE PRODUIT
+function resetProductForm() {
+  $("productForm").reset();
+  $("productId").value = "";
+  $("productStock").value = "0";
+  $("saveProductButton").textContent = "Enregistrer le produit";
+  $("cancelEditButton").hidden = true;
+}
 
-  document.querySelectorAll("[data-i18n]").forEach(element => {
-    const key = element.dataset.i18n;
-    if (translations[lang][key]) {
-      element.textContent = translations[lang][key];
+// ENREGISTRER OU MODIFIER UN PRODUIT
+$("productForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  if (!currentUser || !currentOrganization) {
+    showMessage("productMessage", "Votre entreprise n'est pas encore chargée.", "error");
+    return;
+  }
+
+  const productId = $("productId").value;
+
+  const product = {
+    organization_id: currentOrganization.id,
+    name: $("productName").value.trim(),
+    type: $("productType").value,
+    description: $("productDescription").value.trim() || null,
+    price: Number($("productPrice").value),
+    stock: $("productType").value === "service"
+      ? 0
+      : Number($("productStock").value)
+  };
+
+  if (!product.name || product.price < 0 || product.stock < 0) {
+    showMessage("productMessage", "Vérifiez les informations saisies.", "error");
+    return;
+  }
+
+  const button = $("saveProductButton");
+  button.disabled = true;
+  button.textContent = productId ? "Modification..." : "Enregistrement...";
+
+  try {
+    let result;
+
+    if (productId) {
+      result = await supabaseClient
+        .from("products")
+        .update(product)
+        .eq("id", productId)
+        .eq("organization_id", currentOrganization.id);
+    } else {
+      result = await supabaseClient
+        .from("products")
+        .insert(product);
     }
+
+    if (result.error) throw result.error;
+
+    resetProductForm();
+
+    showMessage(
+      "productMessage",
+      productId
+        ? "Produit modifié avec succès !"
+        : "Produit enregistré avec succès !",
+      "success"
+    );
+
+    await loadProducts();
+
+  } catch (error) {
+    showMessage("productMessage", "Erreur : " + error.message, "error");
+  } finally {
+    button.disabled = false;
+    if (!$("productId").value) {
+      $("saveProductButton").textContent = "Enregistrer le produit";
+    }
+  }
+});
+
+// CHARGER LES PRODUITS
+async function loadProducts() {
+  if (!currentOrganization) return;
+
+  $("productList").textContent = "Chargement des produits...";
+
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("id,name,type,description,price,stock,created_at")
+    .eq("organization_id", currentOrganization.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    $("productList").textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  productsCache = data || [];
+  $("productCount").textContent = productsCache.length;
+
+  const list = $("productList");
+  list.replaceChildren();
+
+  if (!productsCache.length) {
+    list.textContent = "Aucun produit ou service enregistré pour le moment.";
+    return;
+  }
+
+  productsCache.forEach(product => {
+    const item = document.createElement("div");
+    item.className = "product-item";
+
+    const name = document.createElement("strong");
+    name.textContent = product.name;
+
+    const details = document.createElement("small");
+    const typeLabel = product.type === "service" ? "Service" : "Produit";
+
+    details.textContent =
+      typeLabel +
+      " • Prix : " + Number(product.price).toLocaleString("fr-FR") +
+      (product.type === "product" ? " • Stock : " + product.stock : "") +
+      (product.description ? " • " + product.description : "");
+
+    const actions = document.createElement("div");
+    actions.className = "product-actions";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "edit-button";
+    editButton.textContent = "Modifier";
+    editButton.dataset.action = "edit";
+    editButton.dataset.id = product.id;
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-button";
+    deleteButton.textContent = "Supprimer";
+    deleteButton.dataset.action = "delete";
+    deleteButton.dataset.id = product.id;
+
+    actions.append(editButton, deleteButton);
+    item.append(name, details, actions);
+    list.appendChild(item);
+  });
+}
+
+// ACTIONS MODIFIER / SUPPRIMER
+$("productList").addEventListener("click", async function(event) {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+
+  const product = productsCache.find(item => item.id === button.dataset.id);
+  if (!product) return;
+
+  if (button.dataset.action === "edit") {
+    $("productId").value = product.id;
+    $("productName").value = product.name;
+    $("productType").value = product.type;
+    $("productDescription").value = product.description || "";
+    $("productPrice").value = product.price;
+    $("productStock").value = product.stock;
+
+    $("saveProductButton").textContent = "Enregistrer les modifications";
+    $("cancelEditButton").hidden = false;
+
+    showMessage("productMessage", "Modification du produit : " + product.name, "success");
+
+    $("productForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("productName").focus();
+  }
+
+  if (button.dataset.action === "delete") {
+    const confirmed = confirm(
+      "Voulez-vous vraiment supprimer « " + product.name + " » ?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+
+    try {
+      const { error } = await supabaseClient
+        .from("products")
+        .delete()
+        .eq("id", product.id)
+        .eq("organization_id", currentOrganization.id);
+
+      if (error) throw error;
+
+      showMessage("productMessage", "Produit supprimé avec succès !", "success");
+      await loadProducts();
+
+    } catch (error) {
+      showMessage("productMessage", "Erreur de suppression : " + error.message, "error");
+      button.disabled = false;
+    }
+  }
+});
+
+// ANNULER UNE MODIFICATION
+$("cancelEditButton").addEventListener("click", function() {
+  resetProductForm();
+  showMessage("productMessage", "Modification annulée.");
+});
+
+// TYPE SERVICE : STOCK À ZÉRO
+$("productType").addEventListener("change", function() {
+  if (this.value === "service") {
+    $("productStock").value = "0";
+    $("productStock").disabled = true;
+  } else {
+    $("productStock").disabled = false;
+  }
+});
+
+// NAVIGATION DU MENU
+document.querySelectorAll(".sidebar nav a").forEach(link => {
+  link.addEventListener("click", function() {
+    document.querySelectorAll(".sidebar nav a").forEach(item => {
+      item.classList.remove("active");
+    });
+    this.classList.add("active");
   });
 });
 
-// RESTAURER LA SESSION AU CHARGEMENT
+// LANGUE
+$("language").addEventListener("change", function() {
+  document.documentElement.lang = this.value;
+});
+
+// RESTAURER LA SESSION
 async function initializeApp() {
   showAuth("register");
 
@@ -616,7 +814,11 @@ async function initializeApp() {
     }
   } catch (error) {
     console.error("Erreur de session :", error);
-    showMessage("authMessage", "Impossible de vérifier la session : " + error.message, "error");
+    showMessage(
+      "authMessage",
+      "Impossible de vérifier la session : " + error.message,
+      "error"
+    );
   }
 }
 
