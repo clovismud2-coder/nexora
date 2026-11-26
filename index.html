@@ -408,10 +408,151 @@ async function ensureOrganization(user) {
 
   if (createError) throw createError;
   return created;
+
+// GESTION DES ORGANISATIONS ET INVITATIONS
+
+let currentRole = null;
+
+// Récupérer l'identifiant d'une invitation dans le lien
+let pendingInvitationId =
+  new URLSearchParams(window.location.search).get("invite");
+
+// TROUVER OU CRÉER L'ENTREPRISE
+async function ensureOrganization(user) {
+
+  // 1. Rechercher les invitations destinées à cet utilisateur
+  const { data: invitations, error: invitationError } =
+    await supabaseClient.rpc("nexora_list_my_pending_invitations");
+
+  if (invitationError) throw invitationError;
+
+  // 2. Une invitation présente dans le lien doit être acceptée
+  if (pendingInvitationId) {
+
+    const invitationExists = (invitations || []).some(
+      invitation => invitation.member_id === pendingInvitationId
+    );
+
+    if (!invitationExists) {
+      throw new Error(
+        "Cette invitation est introuvable, déjà utilisée ou ne correspond pas à votre adresse e-mail."
+      );
+    }
+
+    const { error: acceptError } =
+      await supabaseClient.rpc("nexora_accept_invitation", {
+        p_member_id: pendingInvitationId
+      });
+
+    if (acceptError) throw acceptError;
+
+    // Retirer l'identifiant de l'adresse après acceptation
+    pendingInvitationId = null;
+
+    const cleanUrl =
+      window.location.pathname +
+      window.location.hash;
+
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // 3. Vérifier qu'il ne reste pas d'invitation en attente
+  const { data: remainingInvitations, error: pendingError } =
+    await supabaseClient.rpc("nexora_list_my_pending_invitations");
+
+  if (pendingError) throw pendingError;
+
+  if (remainingInvitations && remainingInvitations.length > 0) {
+    throw new Error(
+      "Vous avez une invitation en attente. Ouvrez le lien d'invitation reçu pour rejoindre votre entreprise."
+    );
+  }
+
+  // 4. Rechercher les entreprises accessibles
+  const { data: organizations, error: accessError } =
+    await supabaseClient.rpc("nexora_get_my_organizations");
+
+  if (accessError) throw accessError;
+
+  if (organizations && organizations.length > 0) {
+
+    const selected = organizations[0];
+
+    return {
+      id: selected.organization_id,
+      name: selected.organization_name,
+      role: selected.member_role,
+      status: selected.membership_status
+    };
+  }
+
+  // 5. Aucune entreprise : vérifier si un nom d'entreprise
+  // existe dans les informations du compte.
+  const metadata = user.user_metadata || {};
+
+  if (!metadata.business_name) {
+    throw new Error(
+      "Aucune entreprise associée à ce compte. Vérifiez votre invitation ou contactez le propriétaire de votre entreprise."
+    );
+  }
+
+  // 6. Créer l'entreprise du nouveau propriétaire
+  const { data: created, error: createError } =
+    await supabaseClient
+      .from("organizations")
+      .insert({
+        name: metadata.business_name,
+        owner_id: user.id
+      })
+      .select("id,name")
+      .single();
+
+  if (createError) throw createError;
+
+  return {
+    id: created.id,
+    name: created.name,
+    role: "owner",
+    status: "active"
+  };
 }
 
 // ENTRER DANS L'APPLICATION
 async function enterApplication(user) {
+
+  currentUser = user;
+  showApp();
+
+  try {
+
+    currentOrganization = await ensureOrganization(user);
+    currentRole = currentOrganization.role;
+
+    $("companyLabel").textContent =
+      "Entreprise : " + currentOrganization.name +
+      " | Rôle : " + currentRole;
+
+    await loadCustomers();
+    await loadProducts();
+
+  } catch (error) {
+
+    console.error("Erreur organisation :", error);
+
+    currentOrganization = null;
+    currentRole = null;
+
+    showMessage(
+      "clientMessage",
+      "Accès non finalisé : " + error.message,
+      "error"
+    );
+  }
+}
+
+
+// ENTRER DANS L'APPLICATION
+ {
   currentUser = user;
   showApp();
 
