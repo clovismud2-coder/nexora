@@ -116,7 +116,16 @@ nav a.active,nav a:hover{background:#303d61;color:white}
       <button type="submit" id="registerButton">Créer mon compte</button>
     </form>
 
-    <form id="loginForm" hidden>
+    <button
+  type="button"
+  id="showLogin"
+  onclick="
+    document.getElementById('registerForm').style.display='none';
+    document.getElementById('loginForm').style.display='block';
+  "
+>
+  Déjà inscrit ? Se connecter
+</button>
       <label>Adresse e-mail</label>
       <input id="loginEmail" type="email" required placeholder="Votre adresse e-mail">
 
