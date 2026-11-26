@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -102,35 +103,26 @@ nav a.active,nav a:hover{background:#303d61;color:white}
 
     <form id="registerForm">
       <label>Nom complet</label>
-      <input id="registerName" type="text" required placeholder="Votre nom complet">
+      <input id="registerName" type="text" required placeholder="Votre nom complet" autocomplete="name">
 
       <label>Nom de l'entreprise</label>
       <input id="businessName" type="text" required placeholder="Nom de votre entreprise">
 
       <label>Adresse e-mail</label>
-      <input id="registerEmail" type="email" required placeholder="Votre adresse e-mail">
+      <input id="registerEmail" type="email" required placeholder="Votre adresse e-mail" autocomplete="email">
 
       <label>Mot de passe (8 caractères minimum)</label>
-      <input id="registerPassword" type="password" minlength="8" required placeholder="Créer un mot de passe">
+      <input id="registerPassword" type="password" minlength="8" required placeholder="Créer un mot de passe" autocomplete="new-password">
 
       <button type="submit" id="registerButton">Créer mon compte</button>
     </form>
 
-    <button
-  type="button"
-  id="showLogin"
-  onclick="
-    document.getElementById('registerForm').style.display='none';
-    document.getElementById('loginForm').style.display='block';
-  "
->
-  Déjà inscrit ? Se connecter
-</button>
+    <form id="loginForm" hidden>
       <label>Adresse e-mail</label>
-      <input id="loginEmail" type="email" required placeholder="Votre adresse e-mail">
+      <input id="loginEmail" type="email" required placeholder="Votre adresse e-mail" autocomplete="email">
 
       <label>Mot de passe</label>
-      <input id="loginPassword" type="password" required placeholder="Votre mot de passe">
+      <input id="loginPassword" type="password" required placeholder="Votre mot de passe" autocomplete="current-password">
 
       <button type="submit" id="loginButton">Se connecter</button>
     </form>
@@ -139,6 +131,7 @@ nav a.active,nav a:hover{background:#303d61;color:white}
       <span id="switchText">Déjà inscrit ?</span>
       <button type="button" id="switchAuth">Se connecter</button>
     </div>
+
     <div id="authMessage" class="message" role="status"></div>
   </div>
 </section>
@@ -301,11 +294,16 @@ const $ = id => document.getElementById(id);
 
 let currentUser = null;
 let currentOrganization = null;
+let currentRole = null;
 let productsCache = [];
+
+let pendingInvitationId =
+  new URLSearchParams(window.location.search).get("invite");
 
 // MESSAGES
 function showMessage(id, message, type="") {
   const element = $(id);
+  if (!element) return;
   element.textContent = message;
   element.className = "message " + type;
 }
@@ -316,6 +314,7 @@ function showAuth(mode="register") {
   $("app").hidden = true;
 
   const registering = mode === "register";
+
   $("registerForm").hidden = !registering;
   $("loginForm").hidden = registering;
 
@@ -344,77 +343,14 @@ function switchAuthMode() {
 }
 
 // TROUVER OU CRÉER L'ENTREPRISE
-
-async function ensureOrganization(user) {
-  // 1. Rechercher les entreprises accessibles à l'utilisateur
-  const { data: organizations, error: accessError } =
-    await supabaseClient.rpc("nexora_get_my_organizations");
-
-  if (accessError) throw accessError;
-
-  // 2. Si l'utilisateur possède déjà une entreprise ou
-  // appartient à une entreprise, utiliser celle-ci.
-  if (organizations && organizations.length > 0) {
-    const selected = organizations[0];
-
-    return {
-      id: selected.organization_id,
-      name: selected.organization_name,
-      role: selected.member_role,
-      status: selected.membership_status
-    };
-  }
-
-  // 3. Si aucune entreprise n'existe, créer l'espace
-  // uniquement pour un nouvel utilisateur propriétaire.
-  const metadata = user.user_metadata || {};
-
-  const companyName =
-    metadata.business_name ||
-    ("Entreprise de " + (metadata.full_name || user.email));
-
-  const { data: created, error: createError } =
-    await supabaseClient
-      .from("organizations")
-      .insert({
-        name: companyName,
-        owner_id: user.id
-      })
-      .select("id,name")
-      .single();
-
-  if (createError) throw createError;
-
-  return {
-    id: created.id,
-    name: created.name,
-    role: "owner",
-    status: "active"
-  };
-}
-
-  
-
-// GESTION DES ORGANISATIONS ET INVITATIONS
-
-let currentRole = null;
-
-// Récupérer l'identifiant d'une invitation dans le lien
-let pendingInvitationId =
-  new URLSearchParams(window.location.search).get("invite");
-
-// TROUVER OU CRÉER L'ENTREPRISE
 async function ensureOrganization(user) {
 
-  // 1. Rechercher les invitations destinées à cet utilisateur
   const { data: invitations, error: invitationError } =
     await supabaseClient.rpc("nexora_list_my_pending_invitations");
 
   if (invitationError) throw invitationError;
 
-  // 2. Une invitation présente dans le lien doit être acceptée
   if (pendingInvitationId) {
-
     const invitationExists = (invitations || []).some(
       invitation => invitation.member_id === pendingInvitationId
     );
@@ -432,17 +368,12 @@ async function ensureOrganization(user) {
 
     if (acceptError) throw acceptError;
 
-    // Retirer l'identifiant de l'adresse après acceptation
     pendingInvitationId = null;
 
-    const cleanUrl =
-      window.location.pathname +
-      window.location.hash;
-
+    const cleanUrl = window.location.pathname + window.location.hash;
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
-  // 3. Vérifier qu'il ne reste pas d'invitation en attente
   const { data: remainingInvitations, error: pendingError } =
     await supabaseClient.rpc("nexora_list_my_pending_invitations");
 
@@ -454,14 +385,12 @@ async function ensureOrganization(user) {
     );
   }
 
-  // 4. Rechercher les entreprises accessibles
   const { data: organizations, error: accessError } =
     await supabaseClient.rpc("nexora_get_my_organizations");
 
   if (accessError) throw accessError;
 
   if (organizations && organizations.length > 0) {
-
     const selected = organizations[0];
 
     return {
@@ -472,8 +401,6 @@ async function ensureOrganization(user) {
     };
   }
 
-  // 5. Aucune entreprise : vérifier si un nom d'entreprise
-  // existe dans les informations du compte.
   const metadata = user.user_metadata || {};
 
   if (!metadata.business_name) {
@@ -482,7 +409,6 @@ async function ensureOrganization(user) {
     );
   }
 
-  // 6. Créer l'entreprise du nouveau propriétaire
   const { data: created, error: createError } =
     await supabaseClient
       .from("organizations")
@@ -505,12 +431,10 @@ async function ensureOrganization(user) {
 
 // ENTRER DANS L'APPLICATION
 async function enterApplication(user) {
-
   currentUser = user;
   showApp();
 
   try {
-
     currentOrganization = await ensureOrganization(user);
     currentRole = currentOrganization.role;
 
@@ -522,7 +446,6 @@ async function enterApplication(user) {
     await loadProducts();
 
   } catch (error) {
-
     console.error("Erreur organisation :", error);
 
     currentOrganization = null;
@@ -531,31 +454,6 @@ async function enterApplication(user) {
     showMessage(
       "clientMessage",
       "Accès non finalisé : " + error.message,
-      "error"
-    );
-  }
-}
-
-
-// ENTRER DANS L'APPLICATION
- {
-  currentUser = user;
-  showApp();
-
-  try {
-    currentOrganization = await ensureOrganization(user);
-
-    $("companyLabel").textContent =
-      "Entreprise : " + currentOrganization.name;
-
-    await loadCustomers();
-    await loadProducts();
-
-  } catch (error) {
-    console.error("Erreur organisation :", error);
-    showMessage(
-      "clientMessage",
-      "Impossible de charger l'entreprise : " + error.message,
       "error"
     );
   }
@@ -599,6 +497,7 @@ $("registerForm").addEventListener("submit", async function(event) {
       $("registerForm").reset();
       showAuth("login");
       $("loginEmail").value = email;
+
       showMessage(
         "authMessage",
         "Compte créé ! Consultez votre boîte e-mail pour confirmer votre adresse.",
@@ -622,8 +521,14 @@ $("loginForm").addEventListener("submit", async function(event) {
   const password = $("loginPassword").value;
   const button = $("loginButton");
 
+  if (!email || !password) {
+    showMessage("authMessage", "Saisissez votre adresse e-mail et votre mot de passe.", "error");
+    return;
+  }
+
   button.disabled = true;
   button.textContent = "Connexion...";
+  showMessage("authMessage", "Vérification de vos identifiants...");
 
   try {
     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -632,9 +537,15 @@ $("loginForm").addEventListener("submit", async function(event) {
     });
 
     if (error) throw error;
+
+    if (!data.user) {
+      throw new Error("Aucun utilisateur retourné après la connexion.");
+    }
+
     await enterApplication(data.user);
 
   } catch (error) {
+    console.error("Erreur de connexion :", error);
     showMessage("authMessage", "Connexion impossible : " + error.message, "error");
   } finally {
     button.disabled = false;
@@ -642,6 +553,7 @@ $("loginForm").addEventListener("submit", async function(event) {
   }
 });
 
+// CHANGEMENT INSCRIPTION / CONNEXION
 $("switchAuth").addEventListener("click", switchAuthMode);
 
 // DÉCONNEXION
@@ -655,7 +567,9 @@ $("logoutButton").addEventListener("click", async function() {
 
   currentUser = null;
   currentOrganization = null;
+  currentRole = null;
   productsCache = [];
+
   showAuth("login");
 });
 
@@ -750,6 +664,7 @@ function resetProductForm() {
   $("productForm").reset();
   $("productId").value = "";
   $("productStock").value = "0";
+  $("productStock").disabled = false;
   $("saveProductButton").textContent = "Enregistrer le produit";
   $("cancelEditButton").hidden = true;
 }
@@ -906,6 +821,7 @@ $("productList").addEventListener("click", async function(event) {
     $("productDescription").value = product.description || "";
     $("productPrice").value = product.price;
     $("productStock").value = product.stock;
+    $("productStock").disabled = product.type === "service";
 
     $("saveProductButton").textContent = "Enregistrer les modifications";
     $("cancelEditButton").hidden = false;
@@ -1002,5 +918,3 @@ initializeApp();
 
 </body>
 </html>
-
-
