@@ -891,9 +891,180 @@ $("language").addEventListener("change", function() {
   document.documentElement.lang = this.value;
 });
 
+/* =====================================
+   RÉCUPÉRATION DU MOT DE PASSE NEXORA
+===================================== */
+
+// Bouton Mot de passe oublié
+const forgotButton = document.createElement("button");
+forgotButton.type = "button";
+forgotButton.textContent = "Mot de passe oublié ?";
+forgotButton.style.cssText =
+  "display:block;width:100%;background:none;color:#4259d6;margin-top:8px;";
+
+$("loginForm").appendChild(forgotButton);
+
+// Formulaire de nouveau mot de passe
+const recoveryForm = document.createElement("form");
+recoveryForm.hidden = true;
+
+recoveryForm.innerHTML = `
+  <label>Votre nouveau mot de passe</label>
+  <input id="newPassword" type="password"
+    minlength="8" required
+    autocomplete="new-password"
+    placeholder="8 caractères minimum">
+
+  <label>Confirmer le nouveau mot de passe</label>
+  <input id="confirmPassword" type="password"
+    minlength="8" required
+    autocomplete="new-password"
+    placeholder="Confirmez votre mot de passe">
+
+  <button type="submit" id="updatePasswordButton">
+    Modifier mon mot de passe
+  </button>
+`;
+
+$("authPage").querySelector(".auth-card")
+  .insertBefore(recoveryForm, $("authPage").querySelector(".switch"));
+
+function showRecoveryForm() {
+  $("authPage").hidden = false;
+  $("app").hidden = true;
+
+  $("registerForm").hidden = true;
+  $("loginForm").hidden = true;
+  recoveryForm.hidden = false;
+  $("authPage").querySelector(".switch").hidden = true;
+
+  $("authSubtitle").textContent =
+    "Créez votre nouveau mot de passe";
+
+  showMessage("authMessage", "");
+}
+
+// Envoyer le lien de récupération
+forgotButton.addEventListener("click", async function() {
+  const email = $("loginEmail").value.trim();
+
+  if (!email) {
+    showMessage(
+      "authMessage",
+      "Veuillez saisir votre adresse e-mail.",
+      "error"
+    );
+    $("loginEmail").focus();
+    return;
+  }
+
+  forgotButton.disabled = true;
+  forgotButton.textContent = "Envoi en cours...";
+
+  try {
+    const redirectUrl =
+      window.location.origin + window.location.pathname;
+
+    const { error } =
+      await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+      });
+
+    if (error) throw error;
+
+    showMessage(
+      "authMessage",
+      "Si cette adresse correspond à un compte, un lien de réinitialisation sera envoyé. Vérifiez votre boîte e-mail.",
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      "authMessage",
+      "Erreur : " + error.message,
+      "error"
+    );
+  } finally {
+    forgotButton.disabled = false;
+    forgotButton.textContent = "Mot de passe oublié ?";
+  }
+});
+
+// Détecter le lien de récupération Supabase
+supabaseClient.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY") {
+    showRecoveryForm();
+  }
+});
+
+// Enregistrer le nouveau mot de passe
+recoveryForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const password = $("newPassword").value;
+  const confirmation = $("confirmPassword").value;
+  const button = $("updatePasswordButton");
+
+  if (password.length < 8) {
+    showMessage(
+      "authMessage",
+      "Le mot de passe doit contenir au moins 8 caractères.",
+      "error"
+    );
+    return;
+  }
+
+  if (password !== confirmation) {
+    showMessage(
+      "authMessage",
+      "Les deux mots de passe ne correspondent pas.",
+      "error"
+    );
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Modification en cours...";
+
+  try {
+    const { error } = await supabaseClient.auth.updateUser({
+      password: password
+    });
+
+    if (error) throw error;
+
+    recoveryForm.reset();
+    recoveryForm.hidden = true;
+    $("authPage").querySelector(".switch").hidden = false;
+
+    await supabaseClient.auth.signOut();
+
+    showAuth("login");
+
+    showMessage(
+      "authMessage",
+      "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter.",
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      "authMessage",
+      "Impossible de modifier le mot de passe : " + error.message,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Modifier mon mot de passe";
+  }
+});
+
 // RESTAURER LA SESSION
 async function initializeApp() {
-  showAuth("register");
+  showAuth("register");if (window.location.hash.includes("type=recovery")) {
+  showRecoveryForm();
+  return;
+}
 
   try {
     const { data, error } = await supabaseClient.auth.getSession();
