@@ -211,7 +211,7 @@ nav a.active,nav a:hover{background:#303d61;color:white}
       <h2 class="section-title">Gestion des clients</h2>
       <p>Enregistrez et gérez les informations de vos clients.</p>
 
-      <form id="clientForm">
+      <form id="clientForm"><input type="hidden" id="clientId">
         <label>Nom complet</label>
         <input type="text" id="clientName" required placeholder="Nom du client">
 
@@ -228,8 +228,17 @@ nav a.active,nav a:hover{background:#303d61;color:white}
         <div id="clientMessage" class="message" role="status"></div>
       </form>
 
-      <h3>Liste des clients</h3>
-      <div id="clientList">Chargement des clients...</div>
+      <div class="client-list-header">
+  <h3>Liste des clients</h3>
+  <input
+    type="search"
+    id="clientSearch"
+    placeholder="Rechercher un client..."
+    aria-label="Rechercher un client"
+  >
+</div>
+
+<div id="clientList">Chargement des clients...</div>
     </section>
 
     <!-- GESTION DES PRODUITS ET SERVICES -->
