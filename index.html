@@ -509,6 +509,26 @@ async function ensureOrganization(user) {
 async function enterApplication(user) {await loadCustomers();
 await loadProducts();populateSaleCustomers();
 populateSaleProducts();
+function updateSaleTotal() {
+  const productId = document.getElementById("saleProduct").value;
+  const quantity = Number(document.getElementById("saleQuantity").value) || 0;
+  const totalElement = document.getElementById("saleTotal");
+
+  const product = productsCache.find(item => item.id === productId);
+
+  if (!product || quantity <= 0) {
+    totalElement.textContent = "0";
+    return;
+  }
+
+  const total = Number(product.price) * quantity;
+
+  totalElement.textContent = total.toLocaleString("fr-FR");
+}
+
+document.getElementById("saleProduct").addEventListener("change", updateSaleTotal);
+document.getElementById("saleQuantity").addEventListener("input", updateSaleTotal);
+
   currentUser = user;
   showApp();
 
