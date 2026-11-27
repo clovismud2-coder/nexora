@@ -506,7 +506,9 @@ async function ensureOrganization(user) {
 }
 
 // ENTRER DANS L'APPLICATION
-async function enterApplication(user) {
+async function enterApplication(user) {await loadCustomers();
+await loadProducts();populateSaleCustomers();
+populateSaleProducts();
   currentUser = user;
   showApp();
 
