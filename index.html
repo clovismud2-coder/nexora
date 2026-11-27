@@ -724,7 +724,8 @@ $("saleForm").addEventListener("submit", async function(event) {
     await loadProducts();
     populateSaleProducts();
     await loadSales();
-    updateSaleTotal();
+await loadDashboardStats();
+updateSaleTotal();
 
   } catch (error) {
     message.textContent = "Erreur : " + error.message;
@@ -756,7 +757,8 @@ async function enterApplication(user) {
     populateSaleProducts();
 
     await loadSales();
-    updateSaleTotal();
+await loadDashboardStats();
+updateSaleTotal();
 
   } catch (error) {
     console.error("Erreur organisation :", error);
