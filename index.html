@@ -1341,7 +1341,74 @@ $("productForm").addEventListener("submit", async function(event) {
   }
 });
 
-// CHARGER LES PRODUITS
+// CHARGER LES PRODUITS // AFFICHER LE STOCK DES PRODUITS PHYSIQUES
+function displayStock() {
+  const stockProducts = productsCache.filter(
+    product => product.type === "product"
+  );
+
+  const totalUnits = stockProducts.reduce(
+    (total, product) => total + Math.max(0, Number(product.stock) || 0),
+    0
+  );
+
+  const lowStockProducts = stockProducts.filter(
+    product => Number(product.stock) <= 5
+  );
+
+  $("stockProductCount").textContent =
+    stockProducts.length.toLocaleString("fr-FR");
+
+  $("stockUnitsTotal").textContent =
+    totalUnits.toLocaleString("fr-FR");
+
+  $("stockLowCount").textContent =
+    lowStockProducts.length.toLocaleString("fr-FR");
+
+  const list = $("stockList");
+  list.replaceChildren();
+
+  if (!stockProducts.length) {
+    list.textContent =
+      "Aucun produit physique enregistré. Ajoutez un produit dans Produits / Services pour suivre son stock.";
+    return;
+  }
+
+  stockProducts.forEach(product => {
+    const quantity = Math.max(0, Number(product.stock) || 0);
+
+    const item = document.createElement("div");
+    item.className = "stock-item";
+
+    const details = document.createElement("div");
+
+    const name = document.createElement("strong");
+    name.textContent = product.name;
+
+    const quantityText = document.createElement("small");
+    quantityText.textContent =
+      "Quantité disponible : " + quantity.toLocaleString("fr-FR");
+
+    details.append(name, quantityText);
+
+    const status = document.createElement("span");
+    status.className = "stock-status";
+
+    if (quantity <= 0) {
+      status.classList.add("stock-out");
+      status.textContent = "Rupture de stock";
+    } else if (quantity <= 5) {
+      status.classList.add("stock-low");
+      status.textContent = "Stock faible";
+    } else {
+      status.classList.add("stock-ok");
+      status.textContent = "Disponible";
+    }
+
+    item.append(details, status);
+    list.appendChild(item);
+  });
+}
 async function loadProducts() {
   if (!currentOrganization) return;
 
