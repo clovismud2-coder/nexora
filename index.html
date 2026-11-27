@@ -508,7 +508,7 @@ async function ensureOrganization(user) {
 // ENTRER DANS L'APPLICATION
 async function enterApplication(user) {await loadCustomers();
 await loadProducts();populateSaleCustomers();
-populateSaleProducts();
+populateSaleProducts();await loadSales();
 function updateSaleTotal() {
   const productId = document.getElementById("saleProduct").value;
   const quantity = Number(document.getElementById("saleQuantity").value) || 0;
