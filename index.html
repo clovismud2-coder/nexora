@@ -663,7 +663,8 @@ $("cancelClientEdit").addEventListener("click", function() {
 });
 
 
-// CHARGER LES CLIENTS
+
+// CHARGER ET AFFICHER LES CLIENTS
 async function loadCustomers() {
   if (!currentOrganization) return;
 
@@ -680,17 +681,33 @@ async function loadCustomers() {
     return;
   }
 
-  $("clientCount").textContent = data.length;
+  clientsCache = data || [];
+  $("clientCount").textContent = clientsCache.length;
 
+  displayCustomers();
+}
+
+// AFFICHER LA LISTE ET APPLIQUER LA RECHERCHE
+function displayCustomers() {
   const list = $("clientList");
+  const search = $("clientSearch").value.trim().toLowerCase();
+
   list.replaceChildren();
 
-  if (!data.length) {
-    list.textContent = "Aucun client enregistré pour le moment.";
+  const filtered = clientsCache.filter(client =>
+    (client.full_name || "").toLowerCase().includes(search) ||
+    (client.phone || "").toLowerCase().includes(search) ||
+    (client.email || "").toLowerCase().includes(search)
+  );
+
+  if (!filtered.length) {
+    list.textContent = clientsCache.length
+      ? "Aucun client ne correspond à votre recherche."
+      : "Aucun client enregistré pour le moment.";
     return;
   }
 
-  data.forEach(customer => {
+  filtered.forEach(customer => {
     const item = document.createElement("div");
     item.className = "client-item";
 
@@ -704,10 +721,113 @@ async function loadCustomers() {
       customer.address
     ].filter(Boolean).join(" • ");
 
-    item.append(name, details);
+    const actions = document.createElement("div");
+    actions.className = "product-actions";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "edit-button";
+    editButton.textContent = "Modifier";
+    editButton.dataset.action = "edit";
+    editButton.dataset.id = customer.id;
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-button";
+    deleteButton.textContent = "Supprimer";
+    deleteButton.dataset.action = "delete";
+    deleteButton.dataset.id = customer.id;
+
+    actions.append(editButton, deleteButton);
+    item.append(name, details, actions);
     list.appendChild(item);
   });
 }
+
+// RECHERCHER UN CLIENT
+$("clientSearch").addEventListener("input", displayCustomers);
+
+// ACTIONS MODIFIER ET SUPPRIMER
+$("clientList").addEventListener("click", async function(event) {
+  const button = event.target.closest("button[data-action]");
+  if (!button || !currentOrganization) return;
+
+  const customer = clientsCache.find(
+    item => item.id === button.dataset.id
+  );
+
+  if (!customer) return;
+
+  if (button.dataset.action === "edit") {
+    $("clientId").value = customer.id;
+    $("clientName").value = customer.full_name || "";
+    $("clientPhone").value = customer.phone || "";
+    $("clientEmail").value = customer.email || "";
+    $("clientAddress").value = customer.address || "";
+
+    $("saveClientButton").textContent = "Enregistrer les modifications";
+    $("cancelClientEdit").hidden = false;
+
+    showMessage(
+      "clientMessage",
+      "Modification du client : " + customer.full_name,
+      "success"
+    );
+
+    $("clientForm").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    $("clientName").focus();
+  }
+
+  if (button.dataset.action === "delete") {
+    const confirmed = confirm(
+      "Voulez-vous vraiment supprimer le client « " +
+      customer.full_name + " » ?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from("customers")
+        .delete()
+        .eq("id", customer.id)
+        .eq("organization_id", currentOrganization.id)
+        .select("id")
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        throw new Error(
+          "Aucun client supprimé. Vérifiez vos autorisations."
+        );
+      }
+
+      showMessage(
+        "clientMessage",
+        "Client supprimé avec succès !",
+        "success"
+      );
+
+      await loadCustomers();
+
+    } catch (error) {
+      showMessage(
+        "clientMessage",
+        "Erreur de suppression : " + error.message,
+        "error"
+      );
+      button.disabled = false;
+    }
+  }
+});
+
 
 // RÉINITIALISER LE FORMULAIRE PRODUIT
 function resetProductForm() {
