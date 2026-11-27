@@ -224,7 +224,14 @@ nav a.active,nav a:hover{background:#303d61;color:white}
         <label>Adresse</label>
         <input type="text" id="clientAddress" placeholder="Adresse du client">
 
-        <button type="submit" id="saveClientButton">Enregistrer le client</button>
+        <button type="submit" id="saveClientButton">Enregistrer le client</button><button
+  type="button"
+  id="cancelClientEdit"
+  class="cancel-button"
+  hidden
+>
+  Annuler la modification
+</button>
         <div id="clientMessage" class="message" role="status"></div>
       </form>
 
