@@ -505,19 +505,60 @@ async function ensureOrganization(user) {
   };
 }
 
-// ENTRER DANS L'APPLICATION
-async function enterApplication(user) {await loadCustomers();
-await loadProducts();populateSaleCustomers();
-populateSaleProducts();await loadSales();
-function updateSaleTotal() {
-  const productId = document.getElementById("saleProduct").value;
-  const quantity = Number(document.getElementById("saleQuantity").value) || 0;
-  const totalElement = document.getElementById("saleTotal");
 
-document.getElementById("saleForm").addEventListener("submit", async function(event) {
-  event.preventDefault();
+// FONCTIONS DU MODULE VENTES
+
+// Remplir la liste des clients
+function populateSaleCustomers() {
+  const select = $("saleCustomer");
+  if (!select) return;
+
+  select.innerHTML =
+    '<option value="">Client sans compte (facultatif)</option>';
+
+  clientsCache.forEach(client => {
+    const option = document.createElement("option");
+    option.value = client.id;
+    option.textContent = client.full_name;
+    select.appendChild(option);
+  });
+}
+
+// Remplir la liste des produits
+function populateSaleProducts() {
+  const select = $("saleProduct");
+  if (!select) return;
+
+  select.innerHTML =
+    '<option value="">Sélectionner un produit ou service</option>';
+
+  productsCache.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent =
+      `${product.name} — ${Number(product.price).toLocaleString("fr-FR")}`;
+    select.appendChild(option);
+  });
+}
+
+// Calculer le montant total
+function updateSaleTotal() {
+  const productId = $("saleProduct").value;
+  const quantity = Number($("saleQuantity").value) || 0;
+
+  const product = productsCache.find(
+    item => item.id === productId
+  );
+
+  $("saleTotal").textContent =
+    product && quantity > 0
+      ? (Number(product.price) * quantity).toLocaleString("fr-FR")
+      : "0";
+}
+
+// Charger l'historique des ventes
 async function loadSales() {
-  const container = document.getElementById("salesList");
+  const container = $("salesList");
 
   if (!currentOrganization) {
     container.textContent = "Aucune entreprise sélectionnée.";
@@ -551,22 +592,30 @@ async function loadSales() {
     .in("sale_id", saleIds);
 
   if (itemsError) {
-    container.textContent = "Erreur de chargement des détails : " + itemsError.message;
+    container.textContent =
+      "Erreur de chargement des détails : " + itemsError.message;
     return;
   }
 
-  container.innerHTML = "";
+  container.replaceChildren();
 
   sales.forEach(sale => {
     const card = document.createElement("div");
     card.className = "stat";
     card.style.margin = "12px 0";
 
-    const customer = clientsCache.find(c => c.id === sale.customer_id);
-    const saleItems = (items || []).filter(item => item.sale_id === sale.id);
+    const customer = clientsCache.find(
+      client => client.id === sale.customer_id
+    );
+
+    const saleItems = (items || []).filter(
+      item => item.sale_id === sale.id
+    );
 
     const title = document.createElement("h3");
-    title.textContent = customer ? customer.full_name : "Client sans compte";
+    title.textContent = customer
+      ? customer.full_name
+      : "Client sans compte";
 
     const details = document.createElement("p");
     details.textContent = saleItems.map(item =>
@@ -574,30 +623,48 @@ async function loadSales() {
     ).join(", ");
 
     const amount = document.createElement("p");
-    amount.textContent = "Total : " + Number(sale.total_amount).toLocaleString("fr-FR");
+    amount.textContent =
+      "Total : " +
+      Number(sale.total_amount).toLocaleString("fr-FR");
 
     const payment = document.createElement("p");
-    payment.textContent = "Paiement : " + (sale.payment_method || "Non précisé");
+    payment.textContent =
+      "Paiement : " + (sale.payment_method || "Non précisé");
 
     const date = document.createElement("p");
-    date.textContent = "Date : " + new Date(sale.created_at).toLocaleString("fr-FR");
+    date.textContent =
+      "Date : " +
+      new Date(sale.created_at).toLocaleString("fr-FR");
 
     card.append(title, details, amount, payment, date);
     container.appendChild(card);
   });
 }
 
+// Calcul automatique
+$("saleProduct").addEventListener("change", updateSaleTotal);
+$("saleQuantity").addEventListener("input", updateSaleTotal);
 
-  const message = document.getElementById("saleMessage");
-  const button = document.getElementById("saveSaleButton");
+// Enregistrer une vente
+$("saleForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
 
-  const productId = document.getElementById("saleProduct").value;
-  const quantity = Number(document.getElementById("saleQuantity").value);
-  const customerId = document.getElementById("saleCustomer").value || null;
-  const payment = document.getElementById("salePayment").value;
+  const message = $("saleMessage");
+  const button = $("saveSaleButton");
 
-  if (!currentOrganization || !productId || !Number.isInteger(quantity) || quantity <= 0) {
-    message.textContent = "Veuillez vérifier les informations de la vente.";
+  const productId = $("saleProduct").value;
+  const quantity = Number($("saleQuantity").value);
+  const customerId = $("saleCustomer").value || null;
+  const payment = $("salePayment").value;
+
+  if (
+    !currentOrganization ||
+    !productId ||
+    !Number.isInteger(quantity) ||
+    quantity <= 0
+  ) {
+    message.textContent =
+      "Veuillez vérifier les informations de la vente.";
     return;
   }
 
@@ -606,48 +673,42 @@ async function loadSales() {
   message.textContent = "";
 
   try {
-    const { data, error } = await supabaseClient.rpc("create_nexora_sale", {
-      p_organization_id: currentOrganization.id,
-      p_product_id: productId,
-      p_quantity: quantity,
-      p_customer_id: customerId,
-      p_payment_method: payment
-    });
+    const { error } = await supabaseClient.rpc(
+      "create_nexora_sale",
+      {
+        p_organization_id: currentOrganization.id,
+        p_product_id: productId,
+        p_quantity: quantity,
+        p_customer_id: customerId,
+        p_payment_method: payment
+      }
+    );
 
     if (error) throw error;
 
     message.textContent = "Vente enregistrée avec succès !";
+    message.className = "message success";
 
     this.reset();
-    document.getElementById("saleQuantity").value = 1;
+    $("saleQuantity").value = "1";
 
     await loadProducts();
     populateSaleProducts();
+    await loadSales();
     updateSaleTotal();
 
   } catch (error) {
     message.textContent = "Erreur : " + error.message;
+    message.className = "message error";
+
   } finally {
     button.disabled = false;
     button.textContent = "Enregistrer la vente";
   }
 });
 
-  const product = productsCache.find(item => item.id === productId);
-
-  if (!product || quantity <= 0) {
-    totalElement.textContent = "0";
-    return;
-  }
-
-  const total = Number(product.price) * quantity;
-
-  totalElement.textContent = total.toLocaleString("fr-FR");
-}
-
-document.getElementById("saleProduct").addEventListener("change", updateSaleTotal);
-document.getElementById("saleQuantity").addEventListener("input", updateSaleTotal);
-
+// ENTRER DANS L'APPLICATION
+async function enterApplication(user) {
   currentUser = user;
   showApp();
 
@@ -662,6 +723,12 @@ document.getElementById("saleQuantity").addEventListener("input", updateSaleTota
     await loadCustomers();
     await loadProducts();
 
+    populateSaleCustomers();
+    populateSaleProducts();
+
+    await loadSales();
+    updateSaleTotal();
+
   } catch (error) {
     console.error("Erreur organisation :", error);
 
@@ -675,6 +742,7 @@ document.getElementById("saleQuantity").addEventListener("input", updateSaleTota
     );
   }
 }
+
 
 // INSCRIPTION
 $("registerForm").addEventListener("submit", async function(event) {
