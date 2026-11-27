@@ -148,7 +148,7 @@ nav a.active,nav a:hover{background:#303d61;color:white}
     <a href="#dashboard-page" class="active">⌂ Tableau de bord</a>
     <a href="#clients-page">♙ Clients</a>
     <a href="#products-page">▦ Produits / Services</a>
-    <a href="#">＄ Ventes</a>
+    <a href="#sales-page">＄ Ventes</a>
     <a href="#">↘ Dépenses</a>
     <a href="#">✓ Tâches et rappels</a>
     <a href="#">▤ Rapports</a>
@@ -283,7 +283,67 @@ nav a.active,nav a:hover{background:#303d61;color:white}
       <h3>Liste des produits et services</h3>
       <div id="productList">Chargement des produits...</div>
     </section>
+    <!-- GESTION DES VENTES -->
+    <section class="panel" id="sales-page">
+      <h2 class="section-title">Gestion des ventes</h2>
 
+      <p>
+        Enregistrez vos ventes, sélectionnez vos clients
+        et vos produits, et consultez votre historique.
+      </p>
+
+      <h3>Nouvelle vente</h3>
+
+      <form id="saleForm">
+
+        <label>Client</label>
+        <select id="saleCustomer">
+          <option value="">Client sans compte (facultatif)</option>
+        </select>
+
+        <label>Produit ou service</label>
+        <select id="saleProduct" required>
+          <option value="">Sélectionner un produit ou service</option>
+        </select>
+
+        <label>Quantité</label>
+        <input
+          type="number"
+          id="saleQuantity"
+          min="1"
+          step="1"
+          value="1"
+          required
+        >
+
+        <label>Mode de paiement</label>
+        <select id="salePayment" required>
+          <option value="Espèces">Espèces</option>
+          <option value="Mobile Money">Mobile Money</option>
+          <option value="Carte bancaire">Carte bancaire</option>
+          <option value="Virement bancaire">Virement bancaire</option>
+          <option value="Autre">Autre</option>
+        </select>
+
+        <div class="stat" style="margin-top:20px">
+          <span>Montant total estimé</span>
+          <h3 id="saleTotal">0</h3>
+        </div>
+
+        <button type="submit" id="saveSaleButton">
+          Enregistrer la vente
+        </button>
+
+        <div id="saleMessage" class="message" role="status"></div>
+
+      </form>
+
+      <h3 style="margin-top:25px">Historique des ventes</h3>
+
+      <div id="salesList">
+        Chargement des ventes...
+      </div>
+    </section>
     <div class="footer">
       © 2026 NEXORA — Universal Business Management System
     </div>
