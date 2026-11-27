@@ -516,6 +516,77 @@ function updateSaleTotal() {
 
 document.getElementById("saleForm").addEventListener("submit", async function(event) {
   event.preventDefault();
+async function loadSales() {
+  const container = document.getElementById("salesList");
+
+  if (!currentOrganization) {
+    container.textContent = "Aucune entreprise sélectionnée.";
+    return;
+  }
+
+  container.textContent = "Chargement des ventes...";
+
+  const { data: sales, error } = await supabaseClient
+    .from("sales")
+    .select("id, customer_id, total_amount, payment_method, status, created_at")
+    .eq("organization_id", currentOrganization.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    container.textContent = "Erreur de chargement : " + error.message;
+    return;
+  }
+
+  if (!sales || sales.length === 0) {
+    container.textContent = "Aucune vente enregistrée pour le moment.";
+    return;
+  }
+
+  const saleIds = sales.map(sale => sale.id);
+
+  const { data: items, error: itemsError } = await supabaseClient
+    .from("sale_items")
+    .select("sale_id, product_name, quantity, unit_price, subtotal")
+    .eq("organization_id", currentOrganization.id)
+    .in("sale_id", saleIds);
+
+  if (itemsError) {
+    container.textContent = "Erreur de chargement des détails : " + itemsError.message;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  sales.forEach(sale => {
+    const card = document.createElement("div");
+    card.className = "stat";
+    card.style.margin = "12px 0";
+
+    const customer = clientsCache.find(c => c.id === sale.customer_id);
+    const saleItems = (items || []).filter(item => item.sale_id === sale.id);
+
+    const title = document.createElement("h3");
+    title.textContent = customer ? customer.full_name : "Client sans compte";
+
+    const details = document.createElement("p");
+    details.textContent = saleItems.map(item =>
+      `${item.product_name} × ${item.quantity}`
+    ).join(", ");
+
+    const amount = document.createElement("p");
+    amount.textContent = "Total : " + Number(sale.total_amount).toLocaleString("fr-FR");
+
+    const payment = document.createElement("p");
+    payment.textContent = "Paiement : " + (sale.payment_method || "Non précisé");
+
+    const date = document.createElement("p");
+    date.textContent = "Date : " + new Date(sale.created_at).toLocaleString("fr-FR");
+
+    card.append(title, details, amount, payment, date);
+    container.appendChild(card);
+  });
+}
+
 
   const message = document.getElementById("saleMessage");
   const button = document.getElementById("saveSaleButton");
