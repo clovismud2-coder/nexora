@@ -589,7 +589,8 @@ $("logoutButton").addEventListener("click", async function() {
   showAuth("login");
 });
 
-// ENREGISTRER UN CLIENT
+
+// ENREGISTRER OU MODIFIER UN CLIENT
 $("clientForm").addEventListener("submit", async function(event) {
   event.preventDefault();
 
@@ -598,36 +599,69 @@ $("clientForm").addEventListener("submit", async function(event) {
     return;
   }
 
-  const button = $("saveClientButton");
-  button.disabled = true;
-  button.textContent = "Enregistrement...";
+  const clientId = $("clientId").value;
 
   const customer = {
-    organization_id: currentOrganization.id,
     full_name: $("clientName").value.trim(),
     phone: $("clientPhone").value.trim() || null,
     email: $("clientEmail").value.trim() || null,
     address: $("clientAddress").value.trim() || null
   };
 
-  try {
-    const { error } = await supabaseClient
-      .from("customers")
-      .insert(customer);
+  const button = $("saveClientButton");
+  button.disabled = true;
+  button.textContent = clientId ? "Modification..." : "Enregistrement...";
 
-    if (error) throw error;
+  try {
+    let result;
+
+    if (clientId) {
+      result = await supabaseClient
+        .from("customers")
+        .update(customer)
+        .eq("id", clientId)
+        .eq("organization_id", currentOrganization.id);
+    } else {
+      result = await supabaseClient
+        .from("customers")
+        .insert({
+          ...customer,
+          organization_id: currentOrganization.id
+        });
+    }
+
+    if (result.error) throw result.error;
 
     $("clientForm").reset();
-    showMessage("clientMessage", "Client enregistré avec succès !", "success");
+    $("clientId").value = "";
+    button.textContent = "Enregistrer le client";
+    $("cancelClientEdit").hidden = true;
+
+    showMessage(
+      "clientMessage",
+      clientId ? "Client modifié avec succès !" : "Client enregistré avec succès !",
+      "success"
+    );
+
     await loadCustomers();
 
   } catch (error) {
-    showMessage("clientMessage", "Erreur d'enregistrement : " + error.message, "error");
+    showMessage("clientMessage", "Erreur : " + error.message, "error");
   } finally {
     button.disabled = false;
     button.textContent = "Enregistrer le client";
   }
 });
+
+// ANNULER LA MODIFICATION D'UN CLIENT
+$("cancelClientEdit").addEventListener("click", function() {
+  $("clientForm").reset();
+  $("clientId").value = "";
+  $("saveClientButton").textContent = "Enregistrer le client";
+  $("cancelClientEdit").hidden = true;
+  showMessage("clientMessage", "Modification annulée.");
+});
+
 
 // CHARGER LES CLIENTS
 async function loadCustomers() {
