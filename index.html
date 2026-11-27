@@ -726,6 +726,34 @@ $("cancelClientEdit").addEventListener("click", function() {
 
 // CHARGER ET AFFICHER LES CLIENTS
 async function loadCustomers() {
+function populateSaleCustomers() {
+  const select = document.getElementById("saleCustomer");
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Client sans compte (facultatif)</option>';
+
+  clientsCache.forEach(client => {
+    const option = document.createElement("option");
+    option.value = client.id;
+    option.textContent = client.full_name;
+    select.appendChild(option);
+  });
+}
+
+function populateSaleProducts() {
+  const select = document.getElementById("saleProduct");
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Sélectionner un produit ou service</option>';
+
+  productsCache.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent = `${product.name} — ${Number(product.price).toLocaleString("fr-FR")}`;
+    select.appendChild(option);
+  });
+}
+
   if (!currentOrganization) return;
 
   $("clientList").textContent = "Chargement des clients...";
