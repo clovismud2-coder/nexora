@@ -514,6 +514,54 @@ function updateSaleTotal() {
   const quantity = Number(document.getElementById("saleQuantity").value) || 0;
   const totalElement = document.getElementById("saleTotal");
 
+document.getElementById("saleForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const message = document.getElementById("saleMessage");
+  const button = document.getElementById("saveSaleButton");
+
+  const productId = document.getElementById("saleProduct").value;
+  const quantity = Number(document.getElementById("saleQuantity").value);
+  const customerId = document.getElementById("saleCustomer").value || null;
+  const payment = document.getElementById("salePayment").value;
+
+  if (!currentOrganization || !productId || !Number.isInteger(quantity) || quantity <= 0) {
+    message.textContent = "Veuillez vérifier les informations de la vente.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+  message.textContent = "";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("create_nexora_sale", {
+      p_organization_id: currentOrganization.id,
+      p_product_id: productId,
+      p_quantity: quantity,
+      p_customer_id: customerId,
+      p_payment_method: payment
+    });
+
+    if (error) throw error;
+
+    message.textContent = "Vente enregistrée avec succès !";
+
+    this.reset();
+    document.getElementById("saleQuantity").value = 1;
+
+    await loadProducts();
+    populateSaleProducts();
+    updateSaleTotal();
+
+  } catch (error) {
+    message.textContent = "Erreur : " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Enregistrer la vente";
+  }
+});
+
   const product = productsCache.find(item => item.id === productId);
 
   if (!product || quantity <= 0) {
