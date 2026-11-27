@@ -1427,7 +1427,7 @@ async function loadProducts() {
 
   productsCache = data || [];
   $("productCount").textContent = productsCache.length;
-
+  displayStock();
   const list = $("productList");
   list.replaceChildren();
 
