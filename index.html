@@ -285,7 +285,32 @@ nav a.active,nav a:hover{background:#303d61;color:white}
       <h3>Liste des produits et services</h3>
       <div id="productList">Chargement des produits...</div>
     </section>
-    <!-- GESTION DES VENTES -->
+    <!-- GESTION DES VENTES --><!-- GESTION DU STOCK -->
+<section class="panel" id="stock-page">
+  <h2 class="section-title">Gestion du stock</h2>
+  <p>Suivez les quantités disponibles de vos produits physiques. Les services ne sont pas comptabilisés dans le stock.</p>
+
+  <div class="stock-summary">
+    <div class="stock-card">
+      <span>Produits suivis</span>
+      <strong id="stockProductCount">0</strong>
+    </div>
+
+    <div class="stock-card">
+      <span>Unités disponibles</span>
+      <strong id="stockUnitsTotal">0</strong>
+    </div>
+
+    <div class="stock-card">
+      <span>Alertes de stock faible</span>
+      <strong id="stockLowCount">0</strong>
+    </div>
+  </div>
+
+  <h3>État du stock</h3>
+  <p>Une alerte apparaît lorsque la quantité est de 5 unités ou moins.</p>
+  <div id="stockList">Chargement du stock...</div>
+</section>
     <section class="panel" id="sales-page">
       <h2 class="section-title">Gestion des ventes</h2>
 
