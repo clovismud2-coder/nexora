@@ -555,7 +555,36 @@ function updateSaleTotal() {
       ? (Number(product.price) * quantity).toLocaleString("fr-FR")
       : "0";
 }
+// ACTUALISER LES STATISTIQUES DU TABLEAU DE BORD
+async function loadDashboardStats() {
+  if (!currentOrganization) return;
 
+  const { data, error } = await supabaseClient
+    .from("sales")
+    .select("total_amount")
+    .eq("organization_id", currentOrganization.id)
+    .eq("status", "completed");
+
+  if (error) {
+    console.error("Erreur statistiques :", error.message);
+    return;
+  }
+
+  const sales = data || [];
+
+  const totalSales = sales.length;
+
+  const totalRevenue = sales.reduce(
+    (sum, sale) => sum + Number(sale.total_amount || 0),
+    0
+  );
+
+  $("salesCount").textContent =
+    totalSales.toLocaleString("fr-FR");
+
+  $("revenueTotal").textContent =
+    totalRevenue.toLocaleString("fr-FR") + " CDF";
+}
 // Charger l'historique des ventes
 async function loadSales() {
   const container = $("salesList");
