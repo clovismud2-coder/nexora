@@ -1069,20 +1069,31 @@ $("cancelClientEdit").addEventListener("click", function() {
 
 
 
+
 // CHARGER ET AFFICHER LES CLIENTS
 
-  const select = document.getElementById("saleCustomer");
-  if (!select) return;
+async function loadCustomers() {
+  if (!currentOrganization) return;
 
-  select.innerHTML = '<option value="">Client sans compte (facultatif)</option>';
+  $("clientList").textContent = "Chargement des clients...";
 
-  clientsCache.forEach(client => {
-    const option = document.createElement("option");
-    option.value = client.id;
-    option.textContent = client.full_name;
-    select.appendChild(option);
-  });
+  const { data, error } = await supabaseClient
+    .from("customers")
+    .select("id,full_name,phone,email,address,created_at")
+    .eq("organization_id", currentOrganization.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    $("clientList").textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  clientsCache = data || [];
+  $("clientCount").textContent = clientsCache.length;
+
+  displayCustomers();
 }
+
 
 async function loadCustomers() {
   if (!currentOrganization) return;
