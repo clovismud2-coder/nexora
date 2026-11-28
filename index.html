@@ -90,7 +90,7 @@ nav a.active,nav a:hover{background:#303d61;color:white}
   .stat{padding:15px}
   .stat h3{font-size:22px}
 }
-</style>.stock-summary {
+.stock-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -168,6 +168,7 @@ nav a.active,nav a:hover{background:#303d61;color:white}
     align-items: flex-start;
   }
 }
+</style>
 </head>
 
 <body>
@@ -1069,8 +1070,7 @@ $("cancelClientEdit").addEventListener("click", function() {
 
 
 // CHARGER ET AFFICHER LES CLIENTS
-async function loadCustomers() {
-function populateSaleCustomers() {
+
   const select = document.getElementById("saleCustomer");
   if (!select) return;
 
@@ -1084,20 +1084,7 @@ function populateSaleCustomers() {
   });
 }
 
-function populateSaleProducts() {
-  const select = document.getElementById("saleProduct");
-  if (!select) return;
-
-  select.innerHTML = '<option value="">Sélectionner un produit ou service</option>';
-
-  productsCache.forEach(product => {
-    const option = document.createElement("option");
-    option.value = product.id;
-    option.textContent = `${product.name} — ${Number(product.price).toLocaleString("fr-FR")}`;
-    select.appendChild(option);
-  });
-}
-
+async function loadCustomers() {
   if (!currentOrganization) return;
 
   $("clientList").textContent = "Chargement des clients...";
